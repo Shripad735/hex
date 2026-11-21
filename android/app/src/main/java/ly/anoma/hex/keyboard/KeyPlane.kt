@@ -39,7 +39,7 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
     private val modifier = color(R.color.modifier)
     private var keyHeight = 0
     private fun refreshHeight() {
-        keyHeight = dp(((if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 40 else 56) *
+        keyHeight = dp(((if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 40 else 50) *
             ime.feedback.heightScale).roundToInt())
         (bottom.layoutParams as LayoutParams).height = keyHeight
         (menu.layoutParams as LayoutParams).height = keyHeight * 4
@@ -88,12 +88,12 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
     init {
         orientation = VERTICAL
         layoutDirection = View.LAYOUT_DIRECTION_LTR
-        setPadding(dp(3), 0, dp(3), dp(4))
-        // On edge-to-edge IME windows the system draws its switcher and gesture
-        // handle over the bottom of our window. Keep every key above that region.
+        // System IME affordances (hide handle, keyboard switcher) float over the
+        // window's bottom edge: keep Gboard-like clearance above the gesture bar.
+        setPadding(dp(3), 0, dp(3), dp(24))
         setOnApplyWindowInsetsListener { _, insets ->
             val nav = insets.getInsets(WindowInsets.Type.navigationBars())
-            setPadding(dp(3) + nav.left, 0, dp(3) + nav.right, dp(4) + nav.bottom)
+            setPadding(dp(3) + nav.left, 0, dp(3) + nav.right, dp(24) + nav.bottom)
             insets
         }
         setBackgroundColor(color(R.color.keyboard))
