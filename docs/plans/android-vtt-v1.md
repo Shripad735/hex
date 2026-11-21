@@ -64,6 +64,14 @@ Files: `keyboard/HexKeyboard.kt`, `keyboard/Insertion.kt`, `keyboard/KeyPlane.kt
 - Contract: hold Hex = speak + release to insert; tap = hands-free (✓ finish,
   ✕ discard); dot waveform above keys; spinner replaces ✓ while transcribing.
 - Exit: emulator + 1 real ARM64 phone pass, no lost text, no held mic.
+- Status: static half done on `android-vtt-v1-phase0`. Reviewed
+  `HexKeyboard`/`commitSpeech`/`leaveEditor`: editor-switch/hide cancels
+  capture, `commitSpeech` guards null/secure/hidden view before its two
+  single-char context reads, `beginSpeech` refuses secure/no-permission/busy.
+  Extracted `classifyEditor` from `onStartInput` (behavior unchanged) + new
+  `EditorKindTest` (6 tests) pins the matrix incl. all password variations.
+  Full suite 58/58 green. Runtime matrix (plain/web/chat/email/Docs fields,
+  hold-vs-tap gestures, password zero-read trace) pending device run.
 
 ## Phase 3 — Offline model + settings
 Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
