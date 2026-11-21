@@ -8,6 +8,11 @@ Source baseline: `android/` prototype on `dev` (app 0.1.1/code 2, `ly.anoma.hex`
 `minSdk 31`, `targetSdk 36`, `arm64-v8a` only).
 Work lives on branch `android-vtt`, published to the `Shripad735/hex` fork
 (`fork:true`, parent `anomalyco/hex`). Upstream `origin` untouched.
+Fork CI (`.github/workflows/android-vtt.yml`, fork-only): every push to
+`android-vtt` runs JVM tests + `assembleDebug` and rolls the APK into the
+`android-vtt-latest` prerelease (debug-signed, no keys in CI). Default branch
+of the fork is `android-vtt`; README carries a fork banner. Verified live:
+CI green, release holds `hex-android-vtt.apk` + sha256.
 
 ## Phase 0 — Lock baseline
 - Confirm toolchain: JDK 21, SDK platform 36, NDK 27.2.12479018, CMake 3.22.1,
