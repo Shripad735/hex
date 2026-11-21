@@ -116,6 +116,10 @@ Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
   below 8 s) on CPU-only 720G; no v1 change. Typing/Inter pins verified by
   every green build (`verifyTypingModels`, `verifyInter` in preBuild).
   Remaining: EN+ES airplane-mode smoke.
+- Airplane smoke PASSED 2026-11-21 (Wi-Fi off, full offline): EN inserts
+  correctly; ES "Nos vemos mañana en la estación" ~90% (tester notes
+  possible pronunciation fault). Offline promise verified; small model
+  serves both languages with zero network.
 
 ## Phase 5 — Release candidate
 - `:app:bundleRelease` with local `~/.config/hex-android/keystore.properties`.
