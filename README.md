@@ -1,5 +1,11 @@
 # Hex
 
+> **This fork's `android-vtt` branch ships Hex as an Android keyboard:** hold
+> the Hex key, speak, release to insert — fully offline, verified on a real
+> phone. Plan and device results: [docs/plans/android-vtt-v1.md](docs/plans/android-vtt-v1.md).
+> Every push builds a debug APK in the [latest prerelease](https://github.com/Shripad735/hex/releases/tag/android-vtt-latest).
+> Upstream desktop app (Mac/Windows/Linux) below is unchanged.
+
 Hex is local voice dictation for Mac, Windows and Linux. Hold a key, speak, and
 it pastes.
 
