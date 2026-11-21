@@ -90,6 +90,14 @@ Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
 - Privacy: on-device only, no keystroke/transcript store, offline policy + licences.
 - Exit: fresh install -> verified download -> airplane-mode dictation; interrupted
   download -> safe Retry.
+- Status: static half done on `android-vtt-v1-phase0`. Reviewed `ModelStore`:
+  single HTTPS GET, host allowlist, 6-redirect cap, size+SHA-256 before atomic
+  install to `no_backup`, retry keeps tiny usable, corrupt small falls back to
+  tiny at decode time. Extracted `isModelUrl` (behavior unchanged) + new
+  `ModelStoreTest` (3 tests) pins the fail-closed matrix. Verified assets:
+  tiny bundled via `prepareSpeechModel`, privacy policy merged from
+  `play/policy`, licences in-tree. Full suite 64/64 green. Runtime half
+  (kill-download-midway, airplane dictation, fresh-install flow) pending device.
 
 ## Phase 4 — Quality gates
 - Accuracy: re-run `benchmark/` EN clips tiny vs small (ref: small WER ~5.26%).
