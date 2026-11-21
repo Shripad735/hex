@@ -149,6 +149,16 @@ Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
    keyboard confirmed fine as the only path (revert commit). Full suite must stay green throughout.
 
 ## Phase 5 — Release candidate
+- Static/domain work (package, sign, verify, list) runs phone-free; phone
+  returns at the end for 4 signed-build screenshots + final smoke.
+- Upload key: NEW keystore generated 2026-11-21 at
+  `~/.config/hex-android/` (`hex-upload.jks` + `keystore.properties`, RSA-2048,
+  30 y). BACK UP that folder (password manager); losing it complicates Play updates.
+- Listing drafts in `play/` reviewed current (EN/ES/DE/NB only — matches the
+  hidden-HI/MR build). No Kotlin `Log` calls (release-DEX claim holds);
+  native logs are NDEBUG-gated.
+- BLOCKERS outside this repo: `anoma.ly/hex/privacy` must also serve the
+  Android policy text; screenshots must come from the final signed build.
 - `:app:bundleRelease` with local `~/.config/hex-android/keystore.properties`.
   R8+shrink, `targetSdk 36`, manifest only `RECORD_AUDIO`+`INTERNET`, 16 KB ELF
   alignment, no release-DEX logs.
