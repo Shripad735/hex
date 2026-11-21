@@ -159,6 +159,16 @@ Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
   native logs are NDEBUG-gated.
 - BLOCKERS outside this repo: `anoma.ly/hex/privacy` must also serve the
   Android policy text; screenshots must come from the final signed build.
+- Release candidate VERIFIED 2026-11-21 (`:app:bundleRelease`, EXIT:0):
+  `app-release.aab` 41,204,630 bytes, SHA-256
+  `93ec9a5d…9ebb8aa9`; universal download 38,345,519 bytes (ref 38,337,704).
+  Badging: `ly.anoma.hex` v0.1.1/code 2, minSdk 31, targetSdk 36, only
+  RECORD_AUDIO+INTERNET, IME bound with BIND_INPUT_METHOD, no FG service.
+  `zipalign -c -P 16 4` exit 0; arm64-only .so set; release `libhexspeech.so`
+  carries no HexSpeech/transcribe-complete strings (NDEBUG); no Kotlin Log
+  usage; R8 mapping 22 MB. Bundletool 1.18.3 used throughout.
+- Phone-later: 4 signed-build screenshots (keyboard, dictation, settings,
+  welcome) + final smoke + email/chat-field gap + low-memory device.
 - `:app:bundleRelease` with local `~/.config/hex-android/keystore.properties`.
   R8+shrink, `targetSdk 36`, manifest only `RECORD_AUDIO`+`INTERNET`, 16 KB ELF
   alignment, no release-DEX logs.
