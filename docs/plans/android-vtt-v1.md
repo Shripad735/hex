@@ -155,6 +155,13 @@ Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
    - Static DONE (`feat(android): speech model picker`): `DictationModel`
      + pure `resolveModel`, `LocalSpeech` honors choice, Settings Model page.
      Suite 74/74 green. UI eyes-on + Tiny-path validation pending device.
+   - Tiny path VALIDATED on device (`tiny transcribe complete`, perfect insert).
+     Language list clean (HI/MR hidden), bar remnants gone, taller keys live.
+4. **Keyboard height parity with Gboard** (follow-up 2026-11-21): number row on
+   the letter plane (digits type directly, excluded from decoder geometry;
+   shift/delete re-anchored to last row) + Gboard-style Size setting
+   (Short 0.88 / Normal / Tall 1.12 / Extra tall 1.24, live scale). Suite 76/76.
+   Device eyes-on pending (phone unplugged).
 3. **Keyboard mode setting**: DROPPED after device eyes-on — bar rendered as
    a thin bottom strip, not the keyboard-sized Hex button expected; full
    keyboard confirmed fine as the only path (revert commit). Full suite must stay green throughout.
