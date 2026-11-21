@@ -29,7 +29,12 @@ Source baseline: `android/` prototype on `dev` (app 0.1.1/code 2, `ly.anoma.hex`
   `./gradlew assembleDebug` BUILD SUCCESSFUL in 5m52s (`EXIT:0`),
   `app-debug.apk` 74,273,910 bytes; `./gradlew test` BUILD SUCCESSFUL —
   InsertionTest 5/5 + NeverSuggestTest 8/8, 0 failures, debug and release.
-  Device/emulator dictation run still pending (needs ARM64 target).
+  Device run PASSED same day: Redmi Note 9 Pro Max (miatoll, SDK 37,
+  arm64-v8a cortex-a76) over USB adb. Setup completed on-device (mic granted,
+  Hex IME enabled + chosen, small model verified byte-complete at
+  190,085,487 bytes in `no_backup`). User dictated via app Dictate bar and
+  via keyboard IME — both inserted correctly. Logcat confirms 2x
+  `HexSpeech: small transcribe complete` (small model, not tiny fallback).
 
 ## Phase 1 — Core VTT loop, English-first
 Files: `speech/MicCapture.kt`, `speech/Whisper.kt`, `cpp/hexspeech.cpp`,
