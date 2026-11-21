@@ -29,9 +29,20 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - name: Cache Android SDK packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ANDROID_SDK_ROOT }}/ndk
+            ${{ env.ANDROID_SDK_ROOT }}/cmake
+            ${{ env.ANDROID_SDK_ROOT }}/build-tools/36.0.0
+            ${{ env.ANDROID_SDK_ROOT }}/platforms/android-36
+          key: android-sdk-${{ runner.os }}-36-ndk27-cmake3221
       - name: Install Android packages
         run: |
-          yes | sdkmanager --licenses > /dev/null
+          SDK="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          export PATH="$SDK/cmdline-tools/latest/bin:$PATH"
+          yes | sdkmanager --licenses > /dev/null || true
           sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
       - name: Gradle caches
         uses: actions/cache@v4
