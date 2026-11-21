@@ -51,7 +51,7 @@ internal class SpeechMenu(context: Context, private val ime: HexKeyboard,
             "Style" -> Style.entries.forEach { value -> row(value.name, if (prefs.style == value) "✓" else "") {
                 prefs.style = value; home()
             } }
-            "Language" -> (listOf(null) + Spoken.entries).forEach { value ->
+            "Language" -> (listOf(null) + Spoken.listedEntries()).forEach { value ->
                 row(value?.label ?: "Automatic", if (prefs.language == value) "✓" else "") {
                     prefs.language = value; ime.nextEnglish = null; close()
                 }

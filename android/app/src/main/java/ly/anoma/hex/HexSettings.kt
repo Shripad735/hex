@@ -212,7 +212,8 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
                     }
                     Page.Language, Page.Layout -> Card {
                         val layout = page == Page.Layout
-                        (listOf(null) + Spoken.entries).forEachIndexed { i, it ->
+                        // Hidden languages stay out of both pickers; the backend still resolves them.
+                        (listOf(null) + Spoken.listedEntries()).forEachIndexed { i, it ->
                             if (i != 0) Rule()
                             Entry(it?.label ?: "Automatic", if (it != null) null else if (layout) "Follow dictation language" else "Follow system language",
                                 if (it == (if (layout) selectedLayout else selectedLanguage)) "✓" else "", {

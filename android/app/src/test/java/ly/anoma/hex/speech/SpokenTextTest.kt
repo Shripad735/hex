@@ -34,6 +34,17 @@ class SpokenTextTest {
         assertEquals("mr", Spoken.Marathi.layoutCode)
     }
 
+    @Test fun hindiAndMarathiStayBackendOnly() {
+        // Hidden from pickers until quality clears native review, but the
+        // backend (matching, sounds, cleanup fallback) keeps working.
+        val listed = Spoken.listedEntries()
+        assertTrue(listed.containsAll(listOf(Spoken.English, Spoken.Spanish, Spoken.German, Spoken.Norwegian)))
+        assertFalse(listed.contains(Spoken.Hindi))
+        assertFalse(listed.contains(Spoken.Marathi))
+        assertEquals(Spoken.Hindi, Spoken.matching("hi"))
+        assertEquals(Spoken.Marathi, Spoken.matching("mr"))
+    }
+
     @Test fun translationOnlyAppliesToSpanish() {
         assertTrue(translateFor(Spoken.Spanish, true, true))
         assertFalse(translateFor(Spoken.Spanish, true, false))

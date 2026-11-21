@@ -4,13 +4,15 @@ import android.content.Context
 import android.content.res.Resources
 
 internal enum class Style { Polished, Casual, Notes, Verbatim }
-internal enum class Spoken(val code: String, val label: String) {
+internal enum class Spoken(val code: String, val label: String, val listed: Boolean = true) {
     English("en", "English"), Spanish("es", "Español"), German("de", "Deutsch"), Norwegian("no", "Norsk"),
-    Hindi("hi", "हिन्दी"), Marathi("mr", "मराठी (beta)");
+    // Dictation backend stays shippable; hidden from pickers until quality clears native review.
+    Hindi("hi", "हिन्दी", false), Marathi("mr", "मराठी (beta)", false);
 
     // Whisper calls Bokmål "no"; the keyboard and its model use BCP 47 "nb".
     val layoutCode get() = if (this == Norwegian) "nb" else code
     companion object {
+        fun listedEntries() = entries.filter { it.listed }
         fun matching(code: String?): Spoken? = when (code) {
             "no", "nb", "nn" -> Norwegian
             else -> entries.firstOrNull { it.code == code }
