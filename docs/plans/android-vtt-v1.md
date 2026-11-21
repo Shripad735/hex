@@ -9,8 +9,18 @@ Source baseline: `android/` prototype on `dev` (app 0.1.1/code 2, `ly.anoma.hex`
 
 ## Phase 0 — Lock baseline
 - Confirm toolchain: JDK 21, SDK platform 36, NDK 27.2.12479018, CMake 3.22.1,
-  Build Tools 36.0.0. Windows note: README paths are macOS (`~/Library/Android/sdk`,
-  Homebrew JDK); translate to `%LOCALAPPDATA%\Android\Sdk` + Android Studio JDK.
+  Build Tools 36.0.0.
+- Windows toolchain (this PC, cmdline-tools only, no Studio):
+  `D:\Android\jdk-21` (Temurin 21), `D:\Android\Sdk` (`ANDROID_HOME` +
+  `ANDROID_SDK_ROOT`, user env), `cmdline-tools/latest` reorganized to
+  `latest/bin/*.bat` (zip 11076708 ships them flat; sdkmanager needs `bin/`),
+  packages: `platform-tools`, `platforms;android-36`, `build-tools;36.0.0`,
+  `ndk;27.2.12479018`, `cmake;3.22.1`. Licenses accepted via sdkmanager.
+  Note: repo README paths are macOS (`~/Library/Android/sdk`, Homebrew JDK).
+- Windows checkout gotcha (fixed on `android-vtt-v1-phase0`): with
+  `core.autocrlf=true`, `typing/en.valid` checked out as CRLF and failed the
+  byte-exact `verifyTypingModels` hash. Root `.gitattributes` now marks
+  `typing/*.hextm|*.valid` as `-text`.
 - `assembleDebug`, `test` (5 unit tests debug+release), `adb install`, launch
   `ly.anoma.hex/.MainActivity`.
 - Record baseline versions + hashes. Tiny works in airplane mode; small download works online.
