@@ -121,6 +121,18 @@ Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
   possible pronunciation fault). Offline promise verified; small model
   serves both languages with zero network.
 
+## Phase 4.5 — v1 feedback round (pre-packaging; user decisions 2026-11-21)
+
+1. **Hindi + Marathi dictation only** (keyboard stays Latin): add `hi`/`mr` to
+   `Spoken`, native labels, hesitation-word lists (formatter requires them),
+   verify Latin-plane fallback when no `hi`/`mr` typing model exists, pin with
+   tests, validate accuracy on-device with tester (native speaker).
+2. **Model picker {Tiny, Small}**: generalize `ModelStore` to a 2-model
+   catalog, persisted choice, existing auto-fallback; Small default.
+3. **Keyboard mode setting**: Full (default, unchanged) vs slim dictation bar
+   (Hex key + switch-keyboard + Hex settings); `onCreateInputView` picks view.
+   ES/DE/NB kept. Full suite must stay green throughout.
+
 ## Phase 5 — Release candidate
 - `:app:bundleRelease` with local `~/.config/hex-android/keystore.properties`.
   R8+shrink, `targetSdk 36`, manifest only `RECORD_AUDIO`+`INTERNET`, 16 KB ELF
