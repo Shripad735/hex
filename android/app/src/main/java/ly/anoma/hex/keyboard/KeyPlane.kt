@@ -37,7 +37,7 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
     private val quiet = color(R.color.quiet)
     private val key = color(R.color.key)
     private val modifier = color(R.color.modifier)
-    private val keyHeight = dp(if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 40 else 50)
+    private val keyHeight = dp(if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 40 else 56)
     private val suggestions = LinearLayout(context)
     private var offered = emptyList<String>()
     private var idle = true
