@@ -63,7 +63,14 @@ Files: `keyboard/HexKeyboard.kt`, `keyboard/Insertion.kt`, `keyboard/KeyPlane.kt
 - Password/secure fields: typing-only, no suggestions, no mic (zero context reads).
 - Contract: hold Hex = speak + release to insert; tap = hands-free (✓ finish,
   ✕ discard); dot waveform above keys; spinner replaces ✓ while transcribing.
-- Exit: emulator + 1 real ARM64 phone pass, no lost text, no held mic.
+- Runtime matrix PASSED 2026-11-21 on Redmi Note 9 Pro Max (same device):
+  A. plain field (Hex practice): "Phase 2, Plain Field Test." inserted,
+  Polished, engine 20:17:08. B. web field (Brave search, Chrome disabled):
+  "Phase 2 Web Check." via tap-handsfree-✓, engine 20:18:48.
+  C. ✕ discard: cancelled dictation left no trace, no engine run.
+  D. password field (Wi-Fi add-network): empty strip, "Dictation off in
+  password fields", Hex key inert, no engine run. dumpsys audio shows no
+  held recording. Email/chat fields not on device — matrix gap noted.
 - Status: static half done on `android-vtt-v1-phase0`. Reviewed
   `HexKeyboard`/`commitSpeech`/`leaveEditor`: editor-switch/hide cancels
   capture, `commitSpeech` guards null/secure/hidden view before its two
