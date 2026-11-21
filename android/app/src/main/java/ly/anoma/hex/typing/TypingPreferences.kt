@@ -24,6 +24,9 @@ internal class TypingPreferences(context: Context) {
     var haptics: Boolean
         get() = prefs.getBoolean("haptics", true)
         set(value) { prefs.edit().putBoolean("haptics", value).apply() }
+    var heightScale: Float
+        get() = prefs.getFloat("keyboardHeight", 1f)
+        set(value) { prefs.edit().putFloat("keyboardHeight", value).apply() }
 
     // Remember only explicit rejection of this exact pair in this language; never save typed text.
     private fun pair(language: String, original: String, replacement: String): String {

@@ -37,7 +37,13 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
     private val quiet = color(R.color.quiet)
     private val key = color(R.color.key)
     private val modifier = color(R.color.modifier)
-    private val keyHeight = dp(if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 40 else 56)
+    private var keyHeight = 0
+    private fun refreshHeight() {
+        keyHeight = dp(((if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 40 else 56) *
+            ime.feedback.heightScale).roundToInt())
+        (bottom.layoutParams as LayoutParams).height = keyHeight
+        (menu.layoutParams as LayoutParams).height = keyHeight * 4
+    }
     private val suggestions = LinearLayout(context)
     private var offered = emptyList<String>()
     private var idle = true
@@ -180,34 +186,36 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
         enterIcon.setImageResource(R.drawable.ic_enter)
         enterIcon.imageTintList = ColorStateList.valueOf(ink)
         enterKey.face.addView(enterIcon, FrameLayout.LayoutParams(dp(23), dp(23), Gravity.CENTER))
+        refreshHeight()
         status(SpeechPhase.Idle, "Hold Hex to talk")
     }
 
     // The Hex key stays mounted across every state change: its original finger-up ends the hold.
     fun layoutKeys(symbols: Boolean, more: Boolean, shifted: Boolean, locked: Boolean, action: String?) {
         clearCallout(); grid = null; letters.clear()
+        refreshHeight()
         plane.removeAllViews()
         val language = ime.layoutLanguage
         val punctuation = if (more && language == Spoken.Spanish) ".,¿¡'" else ".,?!'"
         val lines = when {
             !symbols -> when (language) {
-                Spoken.English -> listOf("qwertyuiop", "asdfghjkl", "zxcvbnm")
-                Spoken.Spanish -> listOf("qwertyuiop", "asdfghjklñ", "zxcvbnm")
-                Spoken.Norwegian -> listOf("qwertyuiopå", "asdfghjkløæ", "zxcvbnm")
-                Spoken.German -> listOf("qwertzuiopü", "asdfghjklöä", "yxcvbnm")
+                Spoken.English -> listOf("1234567890", "qwertyuiop", "asdfghjkl", "zxcvbnm")
+                Spoken.Spanish -> listOf("1234567890", "qwertyuiop", "asdfghjklñ", "zxcvbnm")
+                Spoken.Norwegian -> listOf("1234567890", "qwertyuiopå", "asdfghjkløæ", "zxcvbnm")
+                Spoken.German -> listOf("1234567890", "qwertzuiopü", "asdfghjklöä", "yxcvbnm")
                 // Dictation-only languages type on the Latin plane; no word model.
-                Spoken.Hindi, Spoken.Marathi -> listOf("qwertyuiop", "asdfghjkl", "zxcvbnm")
+                Spoken.Hindi, Spoken.Marathi -> listOf("1234567890", "qwertyuiop", "asdfghjkl", "zxcvbnm")
             }
             more -> listOf("[]{}#%^*+=", "_\\|~<>€£¥•", punctuation)
             else -> listOf("1234567890", "-/:;()$&@\"", punctuation)
         }
         val columns = maxOf(lines[0].length, lines[1].length)
-        val side = if (symbols) 1.5f else (columns - lines[2].length) / 2f
+        val side = if (symbols) 1.5f else (columns - lines.last().length) / 2f
         for ((index, line) in lines.withIndex()) {
             val row = LinearLayout(context)
             plane.addView(row, LayoutParams(LayoutParams.MATCH_PARENT, keyHeight))
             if (index < 2 && line.length < columns) row.addView(View(context), LayoutParams(0, 1, (columns - line.length) / 2f))
-            if (index == 2) {
+            if (index == lines.lastIndex) {
                 if (symbols) cap(row, side, if (more) "123" else "=\\<", "More symbols", modifier, 15f, ime::shift)
                 else icon(row, side, R.drawable.ic_shift, if (locked) "Caps lock" else "Shift",
                     if (shifted) ink else modifier, ime::shift, if (shifted) color(R.color.page) else ink)
@@ -218,9 +226,9 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
                 val k = cap(row, 1f, text, text) {
                     val g = if (symbols) null else geometry()
                     val p = touch ?: g?.centres?.get(c)
-                    if (g != null && p != null) ime.letter(text, p.x, p.y, g) else ime.type(text)
+                    if (g != null && p != null && text.single().isLetter()) ime.letter(text, p.x, p.y, g) else ime.type(text)
                 }
-                if (!symbols) letters[c] = k
+                if (!symbols && c.isLetter()) letters[c] = k
                 val accents = if (symbols) emptyList() else LetterFeedback.options(text.single(), language.layoutCode)
                 if (accents.isNotEmpty()) k.setOnLongClickListener {
                     openMenu(); menu.accents(accents) { accent -> closeMenu(); ime.type(accent) }; true
@@ -257,7 +265,7 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
                 }
             }
             if (index < 2 && line.length < columns) row.addView(View(context), LayoutParams(0, 1, (columns - line.length) / 2f))
-            if (index == 2) {
+            if (index == lines.lastIndex) {
                 deleteKey = icon(row, side, R.drawable.ic_delete, "Delete", modifier, ime::delete).also { k ->
                     k.setOnTouchListener { v, e ->
                         when (e.actionMasked) {

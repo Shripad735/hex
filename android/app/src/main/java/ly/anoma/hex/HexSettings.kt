@@ -35,10 +35,10 @@ import ly.anoma.hex.typing.TypingPreferences
 private enum class Page(val title: String) {
     Home("Hex"), Dictation("Dictation"), Keyboard("Keyboard"), Privacy("Privacy"), Experiments("Experiments"),
     Language("Dictation language"), Layout("Keyboard layout"), Styles("Style"), Model("Speech model"),
-    Policy("Privacy policy"), Licences("Open-source licences");
+    Size("Keyboard size"), Policy("Privacy policy"), Licences("Open-source licences");
     val parent get() = when (this) {
         Language, Styles, Model -> Dictation
-        Layout -> Keyboard
+        Layout, Size -> Keyboard
         Policy, Licences -> Privacy
         else -> Home
     }
@@ -73,6 +73,7 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
     val spatial = remember(revision) { typing.spatial }
     val popups = remember(revision) { typing.popups }
     val haptics = remember(revision) { typing.haptics }
+    val height = remember(revision) { typing.heightScale }
     fun open(next: Page) { if (phase != SpeechPhase.Idle) cancel(); page = next }
     BackHandler(page != Page.Home) { open(page.parent) }
 
@@ -175,6 +176,9 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
                         Card {
                             Entry("Keyboard layout", if (selectedLayout == null) "Follows dictation · " + automatic.label else null,
                                 selectedLayout?.label ?: "Automatic", { open(Page.Layout) })
+                            Rule(); Entry("Size", null, when (height) {
+                                0.88f -> "Short"; 1.12f -> "Tall"; 1.24f -> "Extra tall"; else -> "Normal"
+                            }, { open(Page.Size) })
                             Rule(); Toggle("Autocorrect", "Fix typos when you press space", autocorrect) { typing.autocorrect = it }
                             Rule(); Toggle("Suggest swear words", "Slurs are never suggested", swearWords) { typing.suggestSwearWords = it }
                             Rule(); Toggle("Key pop-ups", "Show the letter above your finger", popups) { typing.popups = it }
@@ -220,6 +224,13 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
                                     if (layout) typing.layout = it else speech.language = it
                                     open(page.parent)
                                 })
+                        }
+                    }
+                    Page.Size -> Card {
+                        listOf("Short" to 0.88f, "Normal" to 1f, "Tall" to 1.12f, "Extra tall" to 1.24f).forEachIndexed { i, (label, scale) ->
+                            if (i != 0) Rule()
+                            Entry(label, value = if (height == scale) "✓" else "",
+                                action = { typing.heightScale = scale; open(page.parent) })
                         }
                     }
                     Page.Policy, Page.Licences -> {
