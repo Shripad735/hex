@@ -21,9 +21,6 @@ internal class TypingPreferences(context: Context) {
     var popups: Boolean
         get() = prefs.getBoolean("popups", true)
         set(value) { prefs.edit().putBoolean("popups", value).apply() }
-    var full: Boolean
-        get() = prefs.getBoolean("fullKeyboard", true)
-        set(value) { prefs.edit().putBoolean("fullKeyboard", value).apply() }
     var haptics: Boolean
         get() = prefs.getBoolean("haptics", true)
         set(value) { prefs.edit().putBoolean("haptics", value).apply() }

@@ -3,6 +3,8 @@ package ly.anoma.hex.keyboard
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
 import android.text.TextUtils
@@ -26,8 +28,9 @@ import ly.anoma.hex.speech.SpeechPhase
 import ly.anoma.hex.speech.Spoken
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
-internal class KeyPlane(context: Context, private val ime: HexKeyboard) : LinearLayout(context), ImeView {
+internal class KeyPlane(context: Context, private val ime: HexKeyboard) : LinearLayout(context) {
     private fun dp(value: Int) = (value * resources.displayMetrics.density).roundToInt()
     private fun color(id: Int) = context.getColor(id)
     private val ink = color(R.color.ink)
@@ -43,7 +46,7 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
     private var grid: KeyGrid? = null
     private var pendingAccents: Runnable? = null
     private val statusText = TextView(context)
-    private val scope = WaveScope(context)
+    private val scope = Scope(context)
     private val menuKey = TextView(context)
     private lateinit var cancelKey: FrameLayout
     private lateinit var doneKey: FrameLayout
@@ -360,7 +363,7 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
         spaceKey.label?.text = next.spoken.label + if (next.translate) " → English" else ""
         spaceKey.label?.textSize = if (next.translate) 12f else 14f
     }
-    override fun status(phase: SpeechPhase, hint: String) {
+    fun status(phase: SpeechPhase, hint: String) {
         this.hint = hint
         idle = phase == SpeechPhase.Idle
         val processing = phase == SpeechPhase.Transcribing
@@ -379,8 +382,8 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
         if (idle) refreshSpace()
         updateStrip()
     }
-    override fun setLevel(value: Float) = scope.push(value)
-    override fun cancelGestures() {
+    fun setLevel(value: Float) = scope.push(value)
+    fun cancelGestures() {
         clearCallout()
         removeCallbacks(hold); removeCallbacks(repeatDelete); removeCallbacks(switchLanguage)
         if (::spaceKey.isInitialized) spaceKey.isPressed = false
@@ -450,5 +453,32 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
         c.face.addView(image, FrameLayout.LayoutParams(dp(size), dp(size), Gravity.CENTER))
         row.addView(c, LayoutParams(0, -1, weight))
         return c
+    }
+
+    private inner class Scope(context: Context) : View(context) {
+        private val levels = FloatArray(66)
+        private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        private var tick = 0
+        fun clear() { tick = 0; levels.fill(0f); invalidate() }
+        fun push(rms: Float) {
+            levels.copyInto(levels, 0, 1, levels.size)
+            levels[levels.lastIndex] = (sqrt(rms.coerceAtLeast(0f)) * 3.2f).coerceIn(0f, 1f)
+            tick++; invalidate()
+        }
+        override fun onDraw(canvas: Canvas) {
+            val step = resources.displayMetrics.density * 5f
+            val columns = (width / step).toInt().coerceAtLeast(1)
+            val radius = resources.displayMetrics.density * .95f
+            paint.color = ink
+            for (x in 0 until columns) {
+                val level = levels[(x * levels.size / columns).coerceAtMost(levels.lastIndex)]
+                val wave = level * kotlin.math.sin((x + tick) * .55f) * 2.65f
+                for (y in -3..3) {
+                    val edge = (1f - abs(y - wave)).coerceIn(0f, 1f)
+                    paint.alpha = (26 + 220 * edge).toInt()
+                    canvas.drawCircle((x + .5f) * width / columns, height / 2f + y * step * .72f, radius, paint)
+                }
+            }
+        }
     }
 }
