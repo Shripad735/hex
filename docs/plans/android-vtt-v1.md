@@ -141,7 +141,10 @@ Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
      Suite 74/74 green. UI eyes-on + Tiny-path validation pending device.
 3. **Keyboard mode setting**: Full (default, unchanged) vs slim dictation bar
    (Hex key + switch-keyboard + Hex settings); `onCreateInputView` picks view.
-   ES/DE/NB kept. Full suite must stay green throughout.
+   ES/DE/NB kept.
+   - Static DONE (`feat(android): dictation-bar keyboard mode`): ImeView seam,
+     WaveScope shared, DictationBar, gear icon, Keyboard type page.
+     Suite 74/74 green. Bar-mode + picker UI eyes-on pending device. Full suite must stay green throughout.
 
 ## Phase 5 — Release candidate
 - `:app:bundleRelease` with local `~/.config/hex-android/keystore.properties`.
