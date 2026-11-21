@@ -106,6 +106,16 @@ Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
   heat/battery on 2–3 GB device per `play/README.md` checklist.
 - Typing models pinned (`verifyTypingModels`), Inter TTF pinned (`verifyInter`).
 - Exit: EN + ES smoke in airplane mode; no IME OOM-kill on low-end device.
+- Status: real-device numbers 2026-11-21 (Redmi Note 9 Pro Max, 720G):
+  rest ~92 MiB PSS / ~218 MiB RSS; peak ~107 MiB PSS / ~233 MiB RSS across
+  35 samples bracketing a ~15 s small-model dictation (far below the
+  emulator ref 367–492 MiB — different accounting/environment; no pressure,
+  no kill, no eviction). 25-word sentence transcribed word-perfect, Polished.
+  Long-clip latency noted by tester as "a little longer" — expected: clips
+  over 8 s keep the full encoder context (`audio_ctx=512` fast path only
+  below 8 s) on CPU-only 720G; no v1 change. Typing/Inter pins verified by
+  every green build (`verifyTypingModels`, `verifyInter` in preBuild).
+  Remaining: EN+ES airplane-mode smoke.
 
 ## Phase 5 — Release candidate
 - `:app:bundleRelease` with local `~/.config/hex-android/keystore.properties`.
