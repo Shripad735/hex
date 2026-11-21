@@ -127,6 +127,10 @@ Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
    `Spoken`, native labels, hesitation-word lists (formatter requires them),
    verify Latin-plane fallback when no `hi`/`mr` typing model exists, pin with
    tests, validate accuracy on-device with tester (native speaker).
+   - Static DONE on `android-vtt-v1-phase0` (`feat(android): Hindi + Marathi
+     dictation`): enum + sounds + QWERTY rows; cleanup falls back to as-heard;
+     missing typing model degrades via existing fallback. Suite 68/68 green.
+     Awaiting device accuracy validation with new APK.
 2. **Model picker {Tiny, Small}**: generalize `ModelStore` to a 2-model
    catalog, persisted choice, existing auto-fallback; Small default.
 3. **Keyboard mode setting**: Full (default, unchanged) vs slim dictation bar
