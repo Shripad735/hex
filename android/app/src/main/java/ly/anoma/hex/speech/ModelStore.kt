@@ -24,6 +24,14 @@ internal object ModelStore {
     }
     private val progress = MutableStateFlow<State>(State.Available)
     val state = progress.asStateFlow()
+
+    /** Pure allowlist for the one model download, kept out of connect() so JVM tests pin it:
+     * fixed HTTPS host set, default or 443 port only, no user info. Fail-closed. */
+    internal fun isModelUrl(target: URL): Boolean {
+        val host = target.host.lowercase()
+        return target.protocol == "https" && target.userInfo == null && target.port in listOf(-1, 443) &&
+            (host == "huggingface.co" || host.endsWith(".cdn.hf.co") || host == "cas-bridge.xethub.hf.co")
+    }
     private fun path(context: Context) = File(context.noBackupFilesDir, "whisper-small-$hash.bin")
     fun installed(context: Context) = path(context).takeIf { it.isFile && it.length() == size }
     fun refresh(context: Context) { if (installed(context) != null) progress.value = State.Ready }
@@ -68,9 +76,7 @@ internal object ModelStore {
     private fun connect(): HttpsURLConnection {
         var target = URL(url)
         repeat(6) {
-            val host = target.host.lowercase()
-            check(target.protocol == "https" && target.userInfo == null && target.port in listOf(-1, 443) &&
-                (host == "huggingface.co" || host.endsWith(".cdn.hf.co") || host == "cas-bridge.xethub.hf.co"))
+            check(isModelUrl(target))
             val http = target.openConnection() as HttpsURLConnection
             try {
                 http.instanceFollowRedirects = false
