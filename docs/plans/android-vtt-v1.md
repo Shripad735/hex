@@ -134,6 +134,11 @@ Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
    - Device result 2026-11-21: Hindi ~95% ✅ ship; Marathi ~30% + slow ❌
      (small-model low-resource quality; Marathi labeled beta in picker).
      4 engine runs, all completed, no hangs.
+   - Follow-up device verdict: Hindi degrades on long/complex sentences,
+     Marathi unusable → both HIDDEN from pickers (`listed=false`), backend
+     + tests kept shippable for a later quality pass. Small is the practical
+     phone ceiling (Medium is ~1 GB+ download and won't survive phone
+     RAM/thermals), so no model-side fix exists in v1 scope.
 2. **Model picker {Tiny, Small}**: generalize `ModelStore` to a 2-model
    catalog, persisted choice, existing auto-fallback; Small default.
    - Static DONE (`feat(android): speech model picker`): `DictationModel`
