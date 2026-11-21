@@ -13,6 +13,10 @@ Fork CI (`.github/workflows/android-vtt.yml`, fork-only): every push to
 `android-vtt-latest` prerelease (debug-signed, no keys in CI). Default branch
 of the fork is `android-vtt`; README carries a fork banner. Verified live:
 CI green, release holds `hex-android-vtt.apk` + sha256.
+- 2026-11-21+: rolling release flipped to FULL (shows as Latest, not grayed
+  prerelease). Showcase site `android-site/` (features + 3 device screenshots +
+  download button) deployed to https://shripad735.github.io/hex/ via
+  `android-site.yml` (redeploys on app or site changes). Both workflows green.
 
 ## Phase 0 — Lock baseline
 - Confirm toolchain: JDK 21, SDK platform 36, NDK 27.2.12479018, CMake 3.22.1,
