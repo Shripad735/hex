@@ -17,6 +17,11 @@ internal enum class Spoken(val code: String, val label: String) {
     }
 }
 internal data class SpeechOptions(val style: Style, val spoken: Spoken, val clean: Boolean, val translate: Boolean)
+
+/** Pure translation rule, kept out of SpeechPreferences so JVM tests can pin it:
+ * translation is a Spanish-only, opt-in, per-dictation choice. */
+internal fun translateFor(spoken: Spoken, enabled: Boolean, nextEnglish: Boolean?) =
+    enabled && spoken == Spoken.Spanish && (nextEnglish ?: true)
 internal class SpeechPreferences(context: Context) {
     private val prefs = context.getSharedPreferences("speech", Context.MODE_PRIVATE)
     var style: Style
@@ -40,5 +45,5 @@ internal class SpeechPreferences(context: Context) {
         get() = prefs.getBoolean("translation", false)
         set(value) { prefs.edit().putBoolean("translation", value).apply() }
     fun options(nextEnglish: Boolean?) = SpeechOptions(style, spoken, clean,
-        translation && spoken == Spoken.Spanish && (nextEnglish ?: true))
+        translateFor(spoken, translation, nextEnglish))
 }
