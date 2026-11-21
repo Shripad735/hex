@@ -25,6 +25,11 @@ Source baseline: `android/` prototype on `dev` (app 0.1.1/code 2, `ly.anoma.hex`
   `ly.anoma.hex/.MainActivity`.
 - Record baseline versions + hashes. Tiny works in airplane mode; small download works online.
 - Exit: debug APK dictates in practice field + one external app on emulator.
+- Phase 0 result (2026-11-21, Windows x64, `android-vtt-v1-phase0`):
+  `./gradlew assembleDebug` BUILD SUCCESSFUL in 5m52s (`EXIT:0`),
+  `app-debug.apk` 74,273,910 bytes; `./gradlew test` BUILD SUCCESSFUL —
+  InsertionTest 5/5 + NeverSuggestTest 8/8, 0 failures, debug and release.
+  Device/emulator dictation run still pending (needs ARM64 target).
 
 ## Phase 1 — Core VTT loop, English-first
 Files: `speech/MicCapture.kt`, `speech/Whisper.kt`, `cpp/hexspeech.cpp`,
