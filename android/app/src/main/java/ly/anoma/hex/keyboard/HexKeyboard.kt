@@ -22,7 +22,8 @@ import ly.anoma.hex.speech.MicCapture
 import ly.anoma.hex.speech.SpeechPhase
 
 class HexKeyboard : InputMethodService() {
-    private var keys: KeyPlane? = null
+    private var keys: ImeView? = null
+    private fun plane() = keys as? KeyPlane
     private lateinit var capture: MicCapture
     internal val preferences by lazy { SpeechPreferences(this) }
     internal var nextEnglish: Boolean? = null
@@ -60,7 +61,8 @@ class HexKeyboard : InputMethodService() {
             meter = { keys?.setLevel(it) }, insert = ::commitSpeech)
     }
     override fun onEvaluateFullscreenMode() = false
-    override fun onCreateInputView(): View = KeyPlane(this, this).also { keys = it }
+    override fun onCreateInputView(): View =
+        (if (feedback.full) KeyPlane(this, this) else DictationBar(this, this)).also { keys = it }
 
     override fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
@@ -93,7 +95,7 @@ class HexKeyboard : InputMethodService() {
                 // before invalidating our own in-flight commit, not a stale intermediate offset.
                 val suffix = undo?.let { it.prefix + it.replacement + " " } ?: word?.token?.takeIf { it.isNotEmpty() }?.let { prefix + it }
                 if (newSelStart != newSelEnd || suffix == null || !endsWith(suffix) ||
-                    oldSelStart == expectedCaret) { resetTyping(); keys?.suggestions(emptyList()) }
+                    oldSelStart == expectedCaret) { resetTyping(); plane()?.suggestions(emptyList()) }
             }
             refreshCaps()
         }
@@ -118,7 +120,7 @@ class HexKeyboard : InputMethodService() {
                 else -> null
             }
         } else null
-        keys?.layoutKeys(symbols, more, shifted, locked, actionLabel)
+        plane()?.layoutKeys(symbols, more, shifted, locked, actionLabel)
     }
     internal fun shift() {
         if (symbols) { more = !more; showPlane(); return }
@@ -130,7 +132,7 @@ class HexKeyboard : InputMethodService() {
         }
         lastShift = now; showPlane()
     }
-    internal fun mode() { resetTyping(); keys?.suggestions(emptyList()); symbols = !symbols; more = false; lastShift = 0; showPlane() }
+    internal fun mode() { resetTyping(); plane()?.suggestions(emptyList()); symbols = !symbols; more = false; lastShift = 0; showPlane() }
     private fun resetTyping() {
         word?.reset(); undo = null; expectedCaret = -1; prefix = ""
     }
@@ -142,7 +144,7 @@ class HexKeyboard : InputMethodService() {
             showPlane(); showSuggestions(active); return
         }
         resetTyping()
-        word = if (ordinaryField) {
+        word = if (ordinaryField && plane() != null) {
             try {
                 TypingWord(models.getOrPut(language) { SpatialDecoder(TypingModel.asset(assets, language)) }, feedback.spatial)
                     .also { it.suggestSwearWords = feedback.suggestSwearWords }
@@ -154,11 +156,11 @@ class HexKeyboard : InputMethodService() {
     private fun showSuggestions(w: TypingWord?) {
         if (w != null && w.token.isNotEmpty()) {
             val choices = w.suggestions()
-            keys?.suggestions(choices, literal = w.literalChip(choices))
+            plane()?.suggestions(choices, literal = w.literalChip(choices))
             return
         }
         val b = if (w != null && !symbols && selStart == selEnd) before() else null
-        keys?.suggestions(if (w != null && b != null && TypingWord.boundary(b.lastOrNull()) && canEndWord()) w.predictions(b) else emptyList())
+        plane()?.suggestions(if (w != null && b != null && TypingWord.boundary(b.lastOrNull()) && canEndWord()) w.predictions(b) else emptyList())
     }
     private fun before() = if (secure) "" else currentInputConnection?.getTextBeforeCursor(96, 0)?.toString().orEmpty()
     private fun endsWith(suffix: String) = !secure && currentInputConnection?.getTextBeforeCursor(suffix.length, 0)?.toString() == suffix
@@ -201,10 +203,10 @@ class HexKeyboard : InputMethodService() {
         val w = word ?: return
         if (symbols || !canEndWord()) return
         val old = w.token
-        if (old.isNotEmpty() && !endsWith(prefix + old)) { resetTyping(); keys?.suggestions(emptyList()); return }
+        if (old.isNotEmpty() && !endsWith(prefix + old)) { resetTyping(); plane()?.suggestions(emptyList()); return }
         if (old.isEmpty() && !TypingWord.boundary(before().lastOrNull())) return
         if (replace(old, text + " ")) {
-            resetTyping(); keys?.suggestions(w.predictions(text)); inputDone()
+            resetTyping(); plane()?.suggestions(w.predictions(text)); inputDone()
         }
     }
     internal fun type(value: String) {
@@ -216,12 +218,12 @@ class HexKeyboard : InputMethodService() {
             if (fix != null && !feedback.blocked(lang, old, fix) && replace(old, fix + " ")) {
                 undo = Undo(lang, prefix, old, fix)
                 if (expectedCaret >= 0) expectedCaret += fix.length + 1 - old.length
-                w.reset(); keys?.suggestions(w.predictions(fix))
+                w.reset(); plane()?.suggestions(w.predictions(fix))
             } else {
-                ic.commitText(" ", 1); resetTyping(); keys?.suggestions(w.predictions(before()))
+                ic.commitText(" ", 1); resetTyping(); plane()?.suggestions(w.predictions(before()))
             }
         } else {
-            resetTyping(); ic.commitText(value, 1); keys?.suggestions(emptyList())
+            resetTyping(); ic.commitText(value, 1); plane()?.suggestions(emptyList())
         }
         inputDone()
     }
@@ -233,7 +235,7 @@ class HexKeyboard : InputMethodService() {
             feedback.undo(last.language, last.original, last.replacement)
             prefix = last.prefix; word?.restored(last.original, prefix)
             if (expectedCaret >= 0) expectedCaret += last.original.length - last.replacement.length - 1
-            keys?.suggestions(emptyList(), literal = last.original); return
+            plane()?.suggestions(emptyList(), literal = last.original); return
         }
         val w = word
         val track = w != null && w.token.isNotEmpty() && endsWith(prefix + w.token)
@@ -244,10 +246,10 @@ class HexKeyboard : InputMethodService() {
             if (!ic.deleteSurroundingTextInCodePoints(1, 0)) sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
             if (track) { w!!.pop(); if (expectedCaret >= 0) expectedCaret-- } else resetTyping()
         }
-        if (w != null && w.token.isNotEmpty()) showSuggestions(w) else keys?.suggestions(emptyList())
+        if (w != null && w.token.isNotEmpty()) showSuggestions(w) else plane()?.suggestions(emptyList())
     }
     internal fun enter() {
-        resetTyping(); keys?.suggestions(emptyList())
+        resetTyping(); plane()?.suggestions(emptyList())
         val info = currentInputEditorInfo
         if (info?.actionLabel != null && (info.imeOptions and EditorInfo.IME_FLAG_NO_ENTER_ACTION) == 0 &&
             currentInputConnection?.performEditorAction(info.actionId) == true) return
@@ -271,7 +273,7 @@ class HexKeyboard : InputMethodService() {
             keys?.status(capture.phase, idleHint())
             return false
         }
-        resetTyping(); keys?.suggestions(emptyList())
+        resetTyping(); plane()?.suggestions(emptyList())
         capture.start(preferences.options(nextEnglish))
         nextEnglish = null
         return true
@@ -291,7 +293,7 @@ class HexKeyboard : InputMethodService() {
         val result = insertion(text, ic.getTextBeforeCursor(1, 0)?.lastOrNull(), ic.getTextAfterCursor(1, 0)?.firstOrNull())
         if (result.isNotEmpty()) ic.commitText(result, 1)
     }
-    private fun leaveEditor() { keys?.closeMenu(); keys?.cancelGestures(); resetTyping(); word = null; keys?.suggestions(emptyList()); nextEnglish = null; capture.cancel() }
+    private fun leaveEditor() { plane()?.closeMenu(); keys?.cancelGestures(); resetTyping(); word = null; plane()?.suggestions(emptyList()); nextEnglish = null; capture.cancel() }
     override fun onFinishInputView(finishingInput: Boolean) { leaveEditor(); super.onFinishInputView(finishingInput) }
     override fun onFinishInput() { leaveEditor(); super.onFinishInput() }
     override fun onWindowHidden() { leaveEditor(); super.onWindowHidden() }

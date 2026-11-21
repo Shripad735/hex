@@ -35,10 +35,11 @@ import ly.anoma.hex.typing.TypingPreferences
 private enum class Page(val title: String) {
     Home("Hex"), Dictation("Dictation"), Keyboard("Keyboard"), Privacy("Privacy"), Experiments("Experiments"),
     Language("Dictation language"), Layout("Keyboard layout"), Styles("Style"), Model("Speech model"),
+    Mode("Keyboard type"),
     Policy("Privacy policy"), Licences("Open-source licences");
     val parent get() = when (this) {
         Language, Styles, Model -> Dictation
-        Layout -> Keyboard
+        Layout, Mode -> Keyboard
         Policy, Licences -> Privacy
         else -> Home
     }
@@ -73,6 +74,7 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
     val spatial = remember(revision) { typing.spatial }
     val popups = remember(revision) { typing.popups }
     val haptics = remember(revision) { typing.haptics }
+    val full = remember(revision) { typing.full }
     fun open(next: Page) { if (phase != SpeechPhase.Idle) cancel(); page = next }
     BackHandler(page != Page.Home) { open(page.parent) }
 
@@ -173,7 +175,8 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
                     }
                     Page.Keyboard -> {
                         Card {
-                            Entry("Keyboard layout", if (selectedLayout == null) "Follows dictation · " + automatic.label else null,
+                            Entry("Keyboard", null, if (full) "Full" else "Dictation bar", { open(Page.Mode) })
+                            Rule(); Entry("Keyboard layout", if (selectedLayout == null) "Follows dictation · " + automatic.label else null,
                                 selectedLayout?.label ?: "Automatic", { open(Page.Layout) })
                             Rule(); Toggle("Autocorrect", "Fix typos when you press space", autocorrect) { typing.autocorrect = it }
                             Rule(); Toggle("Suggest swear words", "Slurs are never suggested", swearWords) { typing.suggestSwearWords = it }
@@ -209,6 +212,12 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
                             if (i != 0) Rule()
                             Entry(it.name, value = if (it == style) "✓" else "", action = { speech.style = it; open(Page.Dictation) })
                         }
+                    }
+                    Page.Mode -> Card {
+                        Entry("Full", "Letters, symbols and dictation", if (full) "✓" else "",
+                            { typing.full = true; open(page.parent) })
+                        Rule(); Entry("Dictation bar", "Hex key, switcher and settings", if (!full) "✓" else "",
+                            { typing.full = false; open(page.parent) })
                     }
                     Page.Language, Page.Layout -> Card {
                         val layout = page == Page.Layout
