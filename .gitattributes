@@ -1,0 +1,5 @@
+# Typing models are hashed byte-for-byte by the verifyTypingModels Gradle task
+# (android/app/build.gradle.kts). Any line-ending conversion breaks the build,
+# e.g. core.autocrlf=true on Windows rewrites en.valid to CRLF. Keep them binary.
+android/app/src/main/assets/typing/*.hextm -text
+android/app/src/main/assets/typing/*.valid -text
