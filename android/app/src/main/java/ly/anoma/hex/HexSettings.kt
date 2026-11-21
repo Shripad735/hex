@@ -34,10 +34,10 @@ import ly.anoma.hex.typing.TypingPreferences
 
 private enum class Page(val title: String) {
     Home("Hex"), Dictation("Dictation"), Keyboard("Keyboard"), Privacy("Privacy"), Experiments("Experiments"),
-    Language("Dictation language"), Layout("Keyboard layout"), Styles("Style"),
+    Language("Dictation language"), Layout("Keyboard layout"), Styles("Style"), Model("Speech model"),
     Policy("Privacy policy"), Licences("Open-source licences");
     val parent get() = when (this) {
-        Language, Styles -> Dictation
+        Language, Styles, Model -> Dictation
         Layout -> Keyboard
         Policy, Licences -> Privacy
         else -> Home
@@ -67,6 +67,7 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
     val style = remember(revision) { speech.style }
     val translate = remember(revision) { speech.translation }
     val clean = remember(revision) { speech.clean }
+    val selectedModel = remember(revision) { DictationModel.matching(speech.model) }
     val autocorrect = remember(revision) { typing.autocorrect }
     val swearWords = remember(revision) { typing.suggestSwearWords }
     val spatial = remember(revision) { typing.spatial }
@@ -138,10 +139,25 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
                             Entry("Style", value = style.name, action = { open(Page.Styles) })
                             Rule(); Entry("Dictation language", if (selectedLanguage == null) automatic.label else null,
                                 selectedLanguage?.label ?: "Automatic", { open(Page.Language) })
+                            Rule(); Entry("Speech model", when (model) {
+                                ModelStore.State.Ready -> "Whisper small is ready"
+                                ModelStore.State.Available -> "Tiny works offline"
+                                ModelStore.State.Retry -> "Download interrupted; tiny is available"
+                                is ModelStore.State.Loading -> "Downloading · ${model.percent}%"
+                            }, selectedModel?.label ?: "Automatic", { open(Page.Model) })
                         }
                         Card {
                             Toggle("Translate what I say", "Dictate in Spanish, write in English", translate) { speech.translation = it }
                             Rule(); Toggle("Clean up what I say", "Drop hesitations and spoken corrections", clean) { speech.clean = it }
+                        }
+                    }
+                    Page.Model -> {
+                        Card {
+                            (listOf(null) + DictationModel.entries).forEachIndexed { i, it ->
+                                if (i != 0) Rule()
+                                Entry(it?.label ?: "Automatic", it?.detail ?: "Small when ready, else Tiny",
+                                    if (it == selectedModel) "✓" else "", { speech.model = it?.id; open(page.parent) })
+                            }
                         }
                         Card {
                             val detail = when (model) {
@@ -151,7 +167,7 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
                                 is ModelStore.State.Loading -> "Downloading · ${model.percent}%"
                             }
                             val action = model == ModelStore.State.Available || model == ModelStore.State.Retry
-                            Entry("Speech model", detail, if (action) "Download" else "",
+                            Entry("Small model download", detail, if (action) "Download" else "",
                                 if (action) download else null)
                         }
                     }

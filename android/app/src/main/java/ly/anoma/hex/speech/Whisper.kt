@@ -10,10 +10,13 @@ internal interface Recognizer {
 internal class LocalSpeech(private val app: Context) : Recognizer {
     override fun decode(pcm: ShortArray, count: Int, language: String, translate: Boolean): String? {
         val threads = Runtime.getRuntime().availableProcessors().coerceIn(1, 4)
-        val preferred = ModelStore.installed(app)
-        val bytes = preferred?.let { Whisper.decode(app.assets, it.absolutePath, pcm, count, threads, language, translate) }
-            ?: Whisper.decode(app.assets, null, pcm, count, threads, language, translate)
-        return bytes?.decodeToString()?.trim()
+        val small = ModelStore.installed(app)
+        val choice = DictationModel.matching(SpeechPreferences(app).model)
+        val bytes = if (resolveModel(choice, small != null) && small != null) {
+            Whisper.decode(app.assets, small.absolutePath, pcm, count, threads, language, translate)
+        } else null
+        return (bytes ?: Whisper.decode(app.assets, null, pcm, count, threads, language, translate))
+            ?.decodeToString()?.trim()
     }
 }
 

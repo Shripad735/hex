@@ -1,7 +1,9 @@
 package ly.anoma.hex.speech
 
 import java.net.URL
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -26,5 +28,25 @@ class ModelStoreTest {
         assertFalse(ModelStore.isModelUrl(URL("https://user@huggingface.co/model.bin")))
         assertFalse(ModelStore.isModelUrl(URL("https://huggingface.co:8443/model.bin")))
         assertFalse(ModelStore.isModelUrl(URL("https://huggingface.co:80/model.bin")))
+    }
+
+    @Test fun explicitTinyAlwaysUsesTiny() {
+        assertFalse(resolveModel(DictationModel.Tiny, true))
+        assertFalse(resolveModel(DictationModel.Tiny, false))
+    }
+
+    @Test fun explicitSmallPrefersSmallButFallsBackToTiny() {
+        // LocalSpeech checks the installed file; resolveModel states the preference.
+        assertTrue(resolveModel(DictationModel.Small, true))
+        assertTrue(resolveModel(DictationModel.Small, false))
+    }
+
+    @Test fun automaticUsesSmallWhenInstalledElseTiny() {
+        assertTrue(resolveModel(null, true))
+        assertFalse(resolveModel(null, false))
+        assertEquals(DictationModel.Tiny, DictationModel.matching("tiny"))
+        assertEquals(DictationModel.Small, DictationModel.matching("small"))
+        assertNull(DictationModel.matching("medium"))
+        assertNull(DictationModel.matching(null))
     }
 }
