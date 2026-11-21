@@ -41,6 +41,15 @@ Files: `speech/MicCapture.kt`, `speech/Whisper.kt`, `cpp/hexspeech.cpp`,
 - Validate EN + `Style.Polished` default, `clean=false`, `translate=false`.
   Leave ES/DE/NB untouched.
 - Exit: 20 fixed clips -> 100% insert or clean error, no crash, nothing persisted.
+- Status: static half done on `android-vtt-v1-phase0`. Pins frozen and verified:
+  tiny `5359861c`/SHA `81871056` (hash-checked in `prepareSpeechModel`),
+  small 190,085,487 bytes/SHA `ae85e4a9` (size+hash-checked in `ModelStore`),
+  whisper.cpp `d1be6fde`/URL_HASH (FetchContent-verified). New `SpokenTextTest`
+  (10 tests) pins locale resolution, `translateFor` gating, formatter edges;
+  `translateFor` extracted from `SpeechPreferences.options` (behavior unchanged)
+  so the rule is JVM-testable. Full suite 46/46 green. MicCapture/hexspeech
+  reviewed, no behavior change without a device to verify against. Clip-level
+  exit criteria pending ARM64 runtime (Phase 4 device run).
 
 ## Phase 2 — IME insertion robustness
 Files: `keyboard/HexKeyboard.kt`, `keyboard/Insertion.kt`, `keyboard/KeyPlane.kt`.
