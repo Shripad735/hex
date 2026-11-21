@@ -4,43 +4,85 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hex for Android — offline voice keyboard</title>
+<meta name="description" content="Hold the Hex key, speak, release. Your words land in any app. Fully offline voice keyboard for Android.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header>
-  <h1>Hex for Android</h1>
-  <p class="tag">Hold the Hex key. Speak. Release. Your words land in any app — fully offline.</p>
-  <p class="cta">
-    <a class="btn" href="https://github.com/Shripad735/hex/releases/tag/android-vtt-latest">Download latest APK</a>
-    <a class="btn ghost" href="https://github.com/Shripad735/hex/tree/android-vtt">Source (android-vtt)</a>
-  </p>
-  <p class="meta">Debug-signed preview builds, rebuilt on every push by the
-    <a href="https://github.com/Shripad735/hex/actions/workflows/android-vtt.yml">android-vtt workflow</a>.
-    Plan and device-verified results:
-    <a href="https://github.com/Shripad735/hex/blob/android-vtt/docs/plans/android-vtt-v1.md">docs/plans/android-vtt-v1.md</a>.</p>
+<nav>
+  <a class="brand" href="#"><span class="mark">⬢</span> Hex <span class="for">for Android</span></a>
+  <a class="btn small" href="https://github.com/Shripad735/hex/releases/tag/android-vtt-latest">Download</a>
+</nav>
+
+<header class="hero">
+  <div class="hero-copy">
+    <p class="pill">●&nbsp; Preview builds &nbsp;·&nbsp; rebuilt on every push</p>
+    <h1>Talk. <span class="grad">Release.</span><br>It's typed.</h1>
+    <p class="sub">Hex is a system-wide voice keyboard for Android. Hold the key, say it,
+      let go — your words land in any app. No cloud, no account, no history.</p>
+    <p class="cta">
+      <a class="btn" href="https://github.com/Shripad735/hex/releases/tag/android-vtt-latest">Download latest APK</a>
+      <a class="btn ghost" href="https://github.com/Shripad735/hex/tree/android-vtt">View source</a>
+    </p>
+    <p class="req">Android 12+ · ARM64 · debug-signed preview · free forever</p>
+  </div>
+  <div class="hero-phone">
+    <div class="phone"><img src="assets/02-dictation.png" alt="Hex dictating with live waveform"></div>
+  </div>
 </header>
-<main>
-  <section>
-    <h2>What it is</h2>
-    <ul>
-      <li>System-wide keyboard: hold the Hex key to dictate, tap for hands-free, ✕ discards.</li>
-      <li>Offline-first: Tiny model bundled and working from install; one 190&nbsp;MB Small download for best accuracy.</li>
-      <li>Dictation in English, Spanish, German and Norwegian, with a Tiny/Small model picker.</li>
-      <li>Typing assistance: suggestions, autocorrect, layouts, pop-ups and haptics.</li>
-      <li>Private by construction: voice and words never leave the phone, no history, no telemetry, no ads.</li>
-    </ul>
-  </section>
-  <section>
-    <h2>Screens</h2>
-    <div class="shots">
-      <figure><img src="assets/01-keyboard.png" alt="Typing with suggestions"><figcaption>Typing with suggestions</figcaption></figure>
-      <figure><img src="assets/02-dictation.png" alt="Live dictation waveform"><figcaption>Live dictation</figcaption></figure>
-      <figure><img src="assets/03-settings.png" alt="Ready settings home"><figcaption>Ready home</figcaption></figure>
-    </div>
-  </section>
-</main>
+
+<section class="stats">
+  <div><strong>100%</strong><span>on-device</span></div>
+  <div><strong>4</strong><span>dictation languages</span></div>
+  <div><strong>2</strong><span>speech models</span></div>
+  <div><strong>0</strong><span>telemetry · ads · accounts</span></div>
+</section>
+
+<section>
+  <h2>Everything you need, nothing that watches you</h2>
+  <div class="grid">
+    <div class="card"><div class="ico">◉</div><h3>Hold to dictate</h3><p>Press and hold the Hex key, speak, release to insert. Tap for hands-free, ✕ discards.</p></div>
+    <div class="card"><div class="ico">▣</div><h3>Full keyboard</h3><p>Letters, symbols, accents and a space bar that follows your dictation language.</p></div>
+    <div class="card"><div class="ico">✦</div><h3>Typing assistance</h3><p>Suggestions, autocorrect, key pop-ups and haptics — tuned per layout.</p></div>
+    <div class="card"><div class="ico">◎</div><h3>Two speech models</h3><p>Tiny bundled and instant for any device; one 190&nbsp;MB Small download for best accuracy. Your pick.</p></div>
+    <div class="card"><div class="ico">⬡</div><h3>Four languages</h3><p>Dictate in English, Spanish, German or Norwegian, with polished, casual, notes or verbatim styles.</p></div>
+    <div class="card"><div class="ico">⬢</div><h3>Private by construction</h3><p>Audio lives in RAM and is never saved. No keystrokes, transcripts, accounts or analytics. Ever.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Looks like a keyboard. Works like magic.</h2>
+  <div class="shots">
+    <div class="phone sm"><img src="assets/01-keyboard.png" alt="Typing with suggestions"></div>
+    <div class="phone sm"><img src="assets/02-dictation.png" alt="Live dictation waveform"></div>
+    <div class="phone sm"><img src="assets/03-settings.png" alt="Ready settings home"></div>
+  </div>
+</section>
+
+<section class="steps">
+  <h2>Three seconds to your first dictation</h2>
+  <ol>
+    <li><strong>Install</strong> the APK, allow the microphone, switch to Hex.</li>
+    <li><strong>Hold</strong> the Hex key and speak in any app.</li>
+    <li><strong>Release.</strong> Polished text, at your cursor.</li>
+  </ol>
+</section>
+
+<section class="download">
+  <h2>Get Hex for Android</h2>
+  <p>Latest preview build, rebuilt from the newest commit on every push.</p>
+  <p><a class="btn big" href="https://github.com/Shripad735/hex/releases/tag/android-vtt-latest">Download APK</a></p>
+  <p class="meta">Requires Android 12+ on ARM64 · checksum (SHA-256) published next to every build ·
+    <a href="https://github.com/Shripad735/hex/actions/workflows/android-vtt.yml">build history</a> ·
+    <a href="https://github.com/Shripad735/hex/blob/android-vtt/docs/plans/android-vtt-v1.md">build plan &amp; device results</a></p>
+</section>
+
 <footer>
-  <p>A showcase of the <code>android-vtt</code> branch of <a href="https://github.com/Shripad735/hex">Shripad735/hex</a>,
+  <p><span class="mark">⬢</span> Hex for Android — a showcase of the
+    <a href="https://github.com/Shripad735/hex/tree/android-vtt"><code>android-vtt</code></a> branch of
+    <a href="https://github.com/Shripad735/hex">Shripad735/hex</a>,
     forked from <a href="https://github.com/anomalyco/hex">anomalyco/hex</a>.</p>
 </footer>
 </body>
