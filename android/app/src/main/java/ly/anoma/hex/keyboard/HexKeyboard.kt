@@ -67,18 +67,9 @@ class HexKeyboard : InputMethodService() {
         nextEnglish = null
         capture.cancel() // Even a different field in the same app must not receive an old result.
         val kind = attribute.inputType and InputType.TYPE_MASK_CLASS
-        val variation = attribute.inputType and InputType.TYPE_MASK_VARIATION
-        secure = when (kind) {
-            InputType.TYPE_CLASS_TEXT -> variation in setOf(InputType.TYPE_TEXT_VARIATION_PASSWORD,
-                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD, InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD)
-            InputType.TYPE_CLASS_NUMBER -> variation == InputType.TYPE_NUMBER_VARIATION_PASSWORD
-            else -> false
-        }
-        ordinaryField = kind == InputType.TYPE_CLASS_TEXT && !secure &&
-            attribute.imeOptions and EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING == 0 &&
-            variation !in setOf(InputType.TYPE_TEXT_VARIATION_URI, InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
-                InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS, InputType.TYPE_TEXT_VARIATION_FILTER) &&
-            attribute.inputType and (InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE) == 0
+        val field = classifyEditor(attribute.inputType, attribute.imeOptions)
+        secure = field.secure
+        ordinaryField = field.ordinary
         resetTyping(); word = null
         symbols = kind == InputType.TYPE_CLASS_NUMBER || kind == InputType.TYPE_CLASS_PHONE ||
             kind == InputType.TYPE_CLASS_DATETIME
