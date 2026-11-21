@@ -6,6 +6,8 @@ No History, no Meetings, no OpenCode, no cloud STT.
 
 Source baseline: `android/` prototype on `dev` (app 0.1.1/code 2, `ly.anoma.hex`,
 `minSdk 31`, `targetSdk 36`, `arm64-v8a` only).
+Work lives on branch `android-vtt`, published to the `Shripad735/hex` fork
+(`fork:true`, parent `anomalyco/hex`). Upstream `origin` untouched.
 
 ## Phase 0 — Lock baseline
 - Confirm toolchain: JDK 21, SDK platform 36, NDK 27.2.12479018, CMake 3.22.1,
