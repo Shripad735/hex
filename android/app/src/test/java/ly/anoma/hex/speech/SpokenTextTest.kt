@@ -19,6 +19,8 @@ class SpokenTextTest {
         assertEquals(Spoken.English, Spoken.matching("en"))
         assertEquals(Spoken.Spanish, Spoken.matching("es"))
         assertEquals(Spoken.German, Spoken.matching("de"))
+        assertEquals(Spoken.Hindi, Spoken.matching("hi"))
+        assertEquals(Spoken.Marathi, Spoken.matching("mr"))
         assertNull(Spoken.matching("fr"))
         assertNull(Spoken.matching(null))
     }
@@ -28,6 +30,8 @@ class SpokenTextTest {
         assertEquals("en", Spoken.English.layoutCode)
         assertEquals("es", Spoken.Spanish.layoutCode)
         assertEquals("de", Spoken.German.layoutCode)
+        assertEquals("hi", Spoken.Hindi.layoutCode)
+        assertEquals("mr", Spoken.Marathi.layoutCode)
     }
 
     @Test fun translationOnlyAppliesToSpanish() {
@@ -74,5 +78,21 @@ class SpokenTextTest {
     @Test fun spanishTranslationFormatsWithEnglishRules() {
         val options = SpeechOptions(Style.Polished, Spoken.Spanish, false, true)
         assertEquals("Hola mundo.", SpokenText.format("hola mundo", options))
+    }
+
+    @Test fun hindiAndMarathiFormatWithoutCrashing() {
+        // Dictation-only: no cleanup rules, so repairs stay as spoken; only
+        // unambiguous hesitations go, and Devanagari has no case to fix.
+        assertEquals("नमस्ते दुनिया.", SpokenText.format("नमस्ते दुनिया",
+            SpeechOptions(Style.Polished, Spoken.Hindi, false, false)))
+        assertEquals("नमस्ते दुनिया.", SpokenText.format("हम्म नमस्ते दुनिया",
+            SpeechOptions(Style.Polished, Spoken.Hindi, false, false)))
+        assertEquals("Tumhi kase aahat?", SpokenText.format("tumhi kase aahat?",
+            SpeechOptions(Style.Polished, Spoken.Marathi, false, false)))
+    }
+
+    @Test fun hindiAndMarathiCleanupFallsBackToAsHeard() {
+        assertEquals("मतलब कल मिलते हैं", SpokenCleanup.clean("मतलब कल मिलते हैं", "hi"))
+        assertEquals("म्हणजे उद्या भेटू", SpokenCleanup.clean("म्हणजे उद्या भेटू", "mr"))
     }
 }

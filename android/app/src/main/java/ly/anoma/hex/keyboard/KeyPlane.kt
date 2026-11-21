@@ -195,6 +195,8 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
                 Spoken.Spanish -> listOf("qwertyuiop", "asdfghjklñ", "zxcvbnm")
                 Spoken.Norwegian -> listOf("qwertyuiopå", "asdfghjkløæ", "zxcvbnm")
                 Spoken.German -> listOf("qwertzuiopü", "asdfghjklöä", "yxcvbnm")
+                // Dictation-only languages type on the Latin plane; no word model.
+                Spoken.Hindi, Spoken.Marathi -> listOf("qwertyuiop", "asdfghjkl", "zxcvbnm")
             }
             more -> listOf("[]{}#%^*+=", "_\\|~<>€£¥•", punctuation)
             else -> listOf("1234567890", "-/:;()$&@\"", punctuation)

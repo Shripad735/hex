@@ -6,7 +6,10 @@ import java.util.Locale
  * markers and safe replacement anchors in lieu of iOS's learned English tagger. */
 internal object SpokenCleanup {
     val sounds = mapOf("en" to "um+|uh+|er+|ah+", "es" to "e+h+m*|e+m+|m{2,}|hm+",
-        "de" to "ä+h+m*|ö+h+m*|hm+", "no" to "e+h+m*|ø+h+m*|ö+h+m*|hm+")
+        "de" to "ä+h+m*|ö+h+m*|hm+", "no" to "e+h+m*|ø+h+m*|ö+h+m*|hm+",
+        // Dictation-only languages: unambiguous hesitations only. Broader repairs
+        // (मतलब, म्हणजे) stay as spoken until word rules exist for them.
+        "hi" to "hmm+|mm+|mmm+|हम्म+|म्म+", "mr" to "hmm+|mm+|mmm+|हम्म+|म्म+")
     private const val open = "¿¡\"“«(„"
     private const val close = ",.;:!?…\"”»)"
     private fun phrases(s: String) = s.split('|').filter(String::isNotEmpty).map { it.split(' ') }.sortedByDescending { it.size }

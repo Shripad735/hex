@@ -5,7 +5,8 @@ import android.content.res.Resources
 
 internal enum class Style { Polished, Casual, Notes, Verbatim }
 internal enum class Spoken(val code: String, val label: String) {
-    English("en", "English"), Spanish("es", "Español"), German("de", "Deutsch"), Norwegian("no", "Norsk");
+    English("en", "English"), Spanish("es", "Español"), German("de", "Deutsch"), Norwegian("no", "Norsk"),
+    Hindi("hi", "हिन्दी"), Marathi("mr", "मराठी");
 
     // Whisper calls Bokmål "no"; the keyboard and its model use BCP 47 "nb".
     val layoutCode get() = if (this == Norwegian) "nb" else code
