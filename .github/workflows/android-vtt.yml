@@ -63,11 +63,12 @@ jobs:
         run: |
           cp android/app/build/outputs/apk/debug/app-debug.apk hex-android-vtt.apk
           sha256sum hex-android-vtt.apk | tee hex-android-vtt.sha256
-      - name: Rolling prerelease
+      - name: Rolling release (Latest)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Full release (not prerelease) so GitHub highlights it as Latest.
           gh release delete android-vtt-latest --cleanup-tag -y || true
           gh release create android-vtt-latest hex-android-vtt.apk hex-android-vtt.sha256 \
-            --prerelease --title "Android VTT latest (${GITHUB_SHA::12})" \
-            --notes "Debug-signed APK from ${GITHUB_SHA}. Built by android-vtt workflow."
+            --title "Hex for Android — latest (${GITHUB_SHA::12})" \
+            --notes "Debug-signed APK from ${GITHUB_SHA}. Offline voice keyboard: hold the Hex key, speak, release to insert. Built by the android-vtt workflow."

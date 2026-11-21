@@ -1,0 +1,36 @@
+name: android-site
+
+# Showcase page for the Android keyboard. Redeploys on site or app changes so
+# screenshots and copy track the branch. Fork-only (GitHub Pages on Shripad735/hex).
+
+on:
+  push:
+    branches: [android-vtt]
+    paths:
+      - "android-site/**"
+      - "android/**"
+      - ".github/workflows/android-site.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: android-site
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: android-site
+      - id: deploy
+        uses: actions/deploy-pages@v4
