@@ -131,8 +131,14 @@ Files: `speech/ModelStore.kt`, `HexSettings.kt`, `MainActivity.kt`.
      dictation`): enum + sounds + QWERTY rows; cleanup falls back to as-heard;
      missing typing model degrades via existing fallback. Suite 68/68 green.
      Awaiting device accuracy validation with new APK.
+   - Device result 2026-11-21: Hindi ~95% ✅ ship; Marathi ~30% + slow ❌
+     (small-model low-resource quality; Marathi labeled beta in picker).
+     4 engine runs, all completed, no hangs.
 2. **Model picker {Tiny, Small}**: generalize `ModelStore` to a 2-model
    catalog, persisted choice, existing auto-fallback; Small default.
+   - Static DONE (`feat(android): speech model picker`): `DictationModel`
+     + pure `resolveModel`, `LocalSpeech` honors choice, Settings Model page.
+     Suite 74/74 green. UI eyes-on + Tiny-path validation pending device.
 3. **Keyboard mode setting**: Full (default, unchanged) vs slim dictation bar
    (Hex key + switch-keyboard + Hex settings); `onCreateInputView` picks view.
    ES/DE/NB kept. Full suite must stay green throughout.
