@@ -241,16 +241,21 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
                         SelectionContainer { Label(text.trim(), size = 14, lines = Int.MAX_VALUE) }
                     }
                     Page.About -> {
-                        Card {
-                            Entry("Hex for Android", "Version ${BuildConfig.VERSION_NAME} · ${BuildConfig.GIT_SHA}")
+                        Column(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally) {
+                            Image(painterResource(R.drawable.hex_mark), null, Modifier.size(56.dp),
+                                colorFilter = ColorFilter.tint(colorResource(R.color.ink)))
+                            Spacer(Modifier.height(10.dp))
+                            Label("Hex for Android", size = 22, weight = FontWeight.SemiBold)
+                            Label("Version ${BuildConfig.VERSION_NAME} · ${BuildConfig.GIT_SHA}", muted = true, size = 14)
                         }
                         Card {
                             Entry("Source code", "github.com/Shripad735/hex", "↗", { openUrl(UpdateCheck.SOURCE_PAGE) })
-                            Rule(); Entry("Developer", "Shripad · shiphandari.in", "↗", { openUrl(UpdateCheck.DEVELOPER_PAGE) })
+                            Rule(); Entry("Developer", "Sripad SK · shripadkhandare.in", "↗", { openUrl(UpdateCheck.DEVELOPER_PAGE) })
                         }
                         Card {
                             when (update) {
-                                UpdateState.Idle -> Entry("Check for updates", "Compare this build with the latest release", action = checkUpdates)
+                                UpdateState.Idle -> Entry("Check for updates", "New builds appear here automatically, at most once a day", action = checkUpdates)
                                 UpdateState.Checking -> Entry("Check for updates", "Checking…")
                                 is UpdateState.Current -> Entry("Check for updates", "You're on the latest build")
                                 is UpdateState.Available -> Entry("Update available", "A newer build is published", "Get", { openUrl(UpdateCheck.RELEASE_PAGE) })

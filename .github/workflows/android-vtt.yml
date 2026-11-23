@@ -68,7 +68,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Full release (not prerelease) so GitHub highlights it as Latest.
+          # --target pins the tag to this commit so the app's update check
+          # can compare the release target against the embedded build SHA.
           gh release delete android-vtt-latest --cleanup-tag -y || true
           gh release create android-vtt-latest hex-android-vtt.apk hex-android-vtt.sha256 \
+            --target "${GITHUB_SHA}" \
             --title "Hex for Android — latest (${GITHUB_SHA::12})" \
             --notes "Debug-signed APK from ${GITHUB_SHA}. Offline voice keyboard: hold the Hex key, speak, release to insert. Built by the android-vtt workflow."

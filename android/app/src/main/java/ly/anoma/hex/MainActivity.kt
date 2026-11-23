@@ -78,6 +78,9 @@ class MainActivity : ComponentActivity() {
             contentResolver.registerContentObserver(Settings.Secure.getUriFor(name), false, changed)
         refresh()
         ModelStore.refresh(this)
+        // One silent update check a day; the row dot is the only signal.
+        if (System.currentTimeMillis() - updatePrefs.getLong("lastCheck", 0) > 24 * 60 * 60 * 1000L)
+            checkForUpdates(silent = true)
         setContent {
             HexTheme {
                 BackHandler(page in 1..2) { go(page - 1) }
@@ -106,23 +109,26 @@ class MainActivity : ComponentActivity() {
     private fun openUrl(url: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
-    private fun checkForUpdates() {
+    private fun checkForUpdates() = checkForUpdates(silent = false)
+
+    private fun checkForUpdates(silent: Boolean) {
         if (updateState == UpdateState.Checking) return
-        updateState = UpdateState.Checking
+        if (!silent) updateState = UpdateState.Checking
         Thread({
             val latest = UpdateCheck.fetchLatestSha()
+            updatePrefs.edit().putLong("lastCheck", System.currentTimeMillis()).apply()
             val next = when {
-                latest == null -> UpdateState.Failed
+                latest == null -> if (silent) null else UpdateState.Failed
                 BuildConfig.GIT_SHA == "dev" || latest.startsWith(BuildConfig.GIT_SHA) -> {
                     updatePrefs.edit().putString("latest", "").apply()
-                    UpdateState.Current(latest)
+                    if (silent) null else UpdateState.Current(latest)
                 }
                 else -> {
                     updatePrefs.edit().putString("latest", latest).apply()
                     UpdateState.Available(latest)
                 }
             }
-            runOnUiThread { updateState = next }
+            if (next != null || !silent) runOnUiThread { if (next != null) updateState = next }
         }, "Hex update check").start()
     }
     private fun go(next: Int) {

@@ -44,10 +44,12 @@ cancel, password lock-down, airplane mode, memory footprint). Plan and results:
 
 ## About
 
-Built by **Shripad** — [www.shiphandari.in](https://www.shiphandari.in) — who wanted
+Built by **Sripad SK** — [shripadkhandare.in](https://shripadkhandare.in) — who wanted
 his own phone to take dictation without sending his voice to a server. Source:
 [github.com/Shripad735/hex](https://github.com/Shripad735/hex)
-(`android-vtt` branch). Suggestions live in
+(`android-vtt` branch). The About page in the app links the source, shows the
+build version, and checks for updates (on demand, plus one silent check a day).
+Suggestions live in
 [issues](https://github.com/Shripad735/hex/issues) for now; pull requests that
 create suggestions automatically are a later step.
 

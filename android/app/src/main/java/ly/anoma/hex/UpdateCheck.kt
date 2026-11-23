@@ -17,12 +17,16 @@ internal sealed interface UpdateState {
 internal object UpdateCheck {
     const val RELEASE_PAGE = "https://github.com/Shripad735/hex/releases/tag/android-vtt-latest"
     const val SOURCE_PAGE = "https://github.com/Shripad735/hex/tree/android-vtt"
-    const val DEVELOPER_PAGE = "https://www.shiphandari.in"
+    const val DEVELOPER_PAGE = "https://shripadkhandare.in"
     private const val RELEASE_API = "https://api.github.com/repos/Shripad735/hex/releases/tags/android-vtt-latest"
 
     /** The release's target commit SHA; null when the response isn't ours. */
-    fun parseTargetSha(json: String): String? =
-        Regex("\"target_commitish\"\\s*:\\s*\"([0-9a-f]{40})\"").find(json)?.groupValues?.get(1)
+    fun parseTargetSha(json: String): String? {
+        Regex("\"target_commitish\"\\s*:\\s*\"([0-9a-f]{40})\"").find(json)?.groupValues?.get(1)?.let { return it }
+        // Rolling releases created without --target echo the branch name instead;
+        // fall back to the short SHA embedded in the release title.
+        return Regex("\\(([0-9a-f]{12})\\)").find(json)?.groupValues?.get(1)
+    }
 
     /** Blocking network call — run off the main thread. Null on any failure. */
     fun fetchLatestSha(): String? {
