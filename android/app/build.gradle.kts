@@ -71,6 +71,10 @@ android {
         targetSdk = 36
         versionCode = 2
         versionName = "0.1.1"
+        // Short commit baked into About; compared against the rolling release.
+        val gitSha = providers.exec { commandLine("git", "rev-parse", "--short=12", "HEAD") }
+            .standardOutput.asText.get().trim().ifEmpty { "dev" }
+        buildConfigField("String", "GIT_SHA", "\"$gitSha\"")
         ndk { abiFilters += "arm64-v8a" }
         externalNativeBuild.cmake {
             arguments += listOf("-DANDROID_STL=c++_static", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
@@ -100,7 +104,7 @@ android {
         }
     }
     packaging.resources.excludes += "DebugProbesKt.bin"
-    buildFeatures { compose = true }
+    buildFeatures { compose = true; buildConfig = true }
     androidResources { noCompress += listOf("bin", "hextm", "valid") }
     sourceSets["main"].assets.srcDir(modelAssets)
     // The same plain-text Android policy ships in Settings and in the Play listing drafts.

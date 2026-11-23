@@ -35,7 +35,7 @@ import ly.anoma.hex.typing.TypingPreferences
 private enum class Page(val title: String) {
     Home("Hex"), Dictation("Dictation"), Keyboard("Keyboard"), Privacy("Privacy"), Experiments("Experiments"),
     Language("Dictation language"), Layout("Keyboard layout"), Styles("Style"), Model("Speech model"),
-    Size("Keyboard size"), Policy("Privacy policy"), Licences("Open-source licences");
+    Size("Keyboard size"), About("About"), Policy("Privacy policy"), Licences("Open-source licences");
     val parent get() = when (this) {
         Language, Styles, Model -> Dictation
         Layout, Size -> Keyboard
@@ -48,7 +48,8 @@ private enum class Page(val title: String) {
 internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: TypingPreferences,
                          model: ModelStore.State, download: () -> Unit, phase: SpeechPhase, transcript: String,
                          notice: String?, dictate: () -> Unit, cancel: () -> Unit, setupPage: (Int) -> Unit,
-                         systemSettings: () -> Unit) {
+                         systemSettings: () -> Unit, aboutDot: Boolean, update: UpdateState,
+                         checkUpdates: () -> Unit, openUrl: (String) -> Unit) {
     var page by rememberSaveable { mutableStateOf(Page.Home) }
     var practice by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -132,6 +133,7 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
                         }
                         Card {
                             Entry("Keyboard settings", value = "↗", action = systemSettings)
+                            Rule(); Entry("About", value = if (aboutDot) "●" else "", action = { open(Page.About) })
                             Rule(); Entry("Run setup again", action = { setupPage(0) })
                         }
                     }
@@ -237,6 +239,24 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
                         val asset = if (page == Page.Policy) "privacy-policy.txt" else "licenses/credits.txt"
                         val text = remember(asset) { context.assets.open(asset).bufferedReader().use { it.readText() } }
                         SelectionContainer { Label(text.trim(), size = 14, lines = Int.MAX_VALUE) }
+                    }
+                    Page.About -> {
+                        Card {
+                            Entry("Hex for Android", "Version ${BuildConfig.VERSION_NAME} · ${BuildConfig.GIT_SHA}")
+                        }
+                        Card {
+                            Entry("Source code", "github.com/Shripad735/hex", "↗", { openUrl(UpdateCheck.SOURCE_PAGE) })
+                            Rule(); Entry("Developer", "Shripad · shiphandari.in", "↗", { openUrl(UpdateCheck.DEVELOPER_PAGE) })
+                        }
+                        Card {
+                            when (update) {
+                                UpdateState.Idle -> Entry("Check for updates", "Compare this build with the latest release", action = checkUpdates)
+                                UpdateState.Checking -> Entry("Check for updates", "Checking…")
+                                is UpdateState.Current -> Entry("Check for updates", "You're on the latest build")
+                                is UpdateState.Available -> Entry("Update available", "A newer build is published", "Get", { openUrl(UpdateCheck.RELEASE_PAGE) })
+                                UpdateState.Failed -> Entry("Check for updates", "Couldn't check — you're offline", "Retry", checkUpdates)
+                            }
+                        }
                     }
                 }
             }

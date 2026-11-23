@@ -1,117 +1,60 @@
-# Hex
+# Hex for Android
 
-> **This fork's `android-vtt` branch ships Hex as an Android keyboard:** hold
-> the Hex key, speak, release to insert — fully offline, verified on a real
-> phone. Plan and device results: [docs/plans/android-vtt-v1.md](docs/plans/android-vtt-v1.md).
-> Every push builds a debug APK in the [latest prerelease](https://github.com/Shripad735/hex/releases/tag/android-vtt-latest).
-> Upstream desktop app (Mac/Windows/Linux) below is unchanged.
+[![android-vtt](https://github.com/Shripad735/hex/actions/workflows/android-vtt.yml/badge.svg?branch=android-vtt)](https://github.com/Shripad735/hex/actions/workflows/android-vtt.yml)
 
-Hex is local voice dictation for Mac, Windows and Linux. Hold a key, speak, and
-it pastes.
+Hold the Hex key, speak, release — your words land in any app. A system-wide
+voice keyboard for Android that is **fully offline**: voice never leaves the
+phone, no account, no ads, no history.
+
+**Download:** [latest APK](https://github.com/Shripad735/hex/releases/tag/android-vtt-latest)
+(debug-signed preview, rebuilt on every push — requires Android 12+ on ARM64).
+
+| Typing with suggestions | Live dictation | Ready home | Welcome |
+| --- | --- | --- | --- |
+| <img src="android-site/assets/01-keyboard.png" width="220" alt="Typing with suggestions"> | <img src="android-site/assets/02-dictation.png" width="220" alt="Live dictation waveform"> | <img src="android-site/assets/03-settings.png" width="220" alt="Ready settings home"> | <img src="android-site/assets/04-welcome.png" width="220" alt="Welcome"> |
 
 ## How it works
 
-- hold the shortcut, speak, then let go
-- Hex transcribes on your device and pastes into whatever app you're in
-- the first run downloads a speech model; after that nothing leaves your machine
-- experimental features live in Labs, at the bottom of the sidebar
+- **Hold** the Hex key, speak, release to insert at the cursor; tap for hands-free dictation, ✕ discards with nothing pasted
+- Speech is transcribed **on the phone** by whisper.cpp: Tiny is bundled and works from first launch in airplane mode; one fixed 190 MB Small download (size + SHA-256 verified) gives the best accuracy
+- Switching editors or hiding the keyboard cancels in-flight dictation; password fields get typing only — no suggestions, no mic
+- A **Speech model picker** (Tiny / Small, Automatic by default) and a **Size setting** (Short → Extra tall) adapt it to any phone
 
-## What it does
+## Features
 
-- hold the shortcut to dictate, or set Shortcut mode to Tap to start and stop
-  with a press
-- the text lands at the cursor in whatever app you're in
-- Option-Shift-V pastes the last dictation again (Ctrl-Alt-V on Windows and Linux)
-- History keeps your dictations, searchable, for 7 days by default
-- Output runs every dictation through steps you choose (word replacements,
-  built-in cleanups, your own scripts, an optional OpenCode rewrite), with
-  different steps per app or website
-- Vocabulary is one list of names Hex should know; Whisper and Qwen3-ASR read
-  it while transcribing, Parakeet models read it with Labs › Vocabulary help
-  on, and the OpenCode rewrite uses it
-- Annotate records the screen while you draw and talk, on macOS, Linux and
-  Windows (GNOME Wayland needs Labs › Annotate on GNOME)
-- an authenticated local API and the [TypeScript SDK](sdk/typescript/README.md)
-  transcribe with the same model, for your own tools
-- Meetings is a macOS lab that records a call and writes the transcript
+- Dictation in English, Spanish, German and Norwegian, with Polished, Casual, Notes and Verbatim styles, plus optional Spanish→English translation
+- Full keyboard: number row, layouts, autocorrect, spatial decoder, accents, key pop-ups and haptics
+- In-app **About** page: source link, developer credit, and an on-demand update check with an update dot on the Home row when a newer build is published
+- Private by construction: microphone audio lives in RAM and is never saved; no keystrokes, transcripts, telemetry or accounts; the manifest requests only `RECORD_AUDIO` + `INTERNET` (the one model download and the opt-in update check)
 
-Output and History:
+## Build from source
 
-<img src="docs/images/output.png" width="600" alt="Hex output: the steps every dictation runs, a Try box, and different steps per app">
-
-<img src="docs/images/history.png" width="600" alt="Hex history: past dictations, a search field, and one entry's raw transcript, app, processing and model">
-
-## Speech models
-
-Hex downloads one model the first time it runs and transcribes with it on your
-machine from then on. On an English system that's Parakeet Unified English: it
-writes while you talk, so the text is ready when you let go. Other languages
-start with the model recommended for them. That model also serves meetings and
-`hex transcribe`.
-
-Settings' picker offers more, among others:
-
-- Parakeet v3: 25 European languages, and it hears which one you speak
-- Cohere Transcribe: the fewest wrong words, in 14 languages; a big download
-- Whisper large-v3-turbo: almost any language, and it reads your vocabulary
-- Qwen3-ASR 0.6B: Chinese and 29 more, and it reads your vocabulary
-- SenseVoice Small: Chinese, Japanese, Korean and English; a small download
-- Nemotron 3.5 ASR: writes while you talk, in 27 languages
-- Granite Speech 5.0: IBM's model, seven languages, with punctuation
-- one-language models: ivrit.ai Whisper for Hebrew, GigaAM v3 for Russian,
-  NB-Whisper for Norwegian, KB-Whisper for Swedish, QwenCleo-ASR for Egyptian
-  Arabic
-- more English models: Parakeet v2 and Underdog Bark 3.0
-
-Add a GGUF model of your own with "Add model file…" in the picker; see
-[your own speech models](docs/features/own-models.md).
-
-## Downloads
-
-Stable is the current release. Dev is the newest build of `dev` and updates
-itself from the dev channel.
-
-| Platform | Stable | Dev |
-| --- | --- | --- |
-| macOS (Apple silicon) | [DMG](https://anoma.ly/hex/download/macos-arm64-dmg) | [DMG](https://anoma.ly/hex/download/dev/macos-arm64-dmg) |
-| Windows x64 | [Installer](https://anoma.ly/hex/download/windows-x64-setup) | [Installer](https://anoma.ly/hex/download/dev/windows-x64-setup) |
-| Windows ARM64 | [Installer](https://anoma.ly/hex/download/windows-arm64-setup) | [Installer](https://anoma.ly/hex/download/dev/windows-arm64-setup) |
-| Linux x86_64 | [Executable](https://anoma.ly/hex/download/linux-x64) | [Executable](https://anoma.ly/hex/download/dev/linux-x64) |
-| Linux x86_64 (Debian, Ubuntu) | [.deb](https://anoma.ly/hex/download/linux-x64-deb) | [.deb](https://anoma.ly/hex/download/dev/linux-x64-deb) |
-| Linux x86_64 (Fedora, openSUSE) | [.rpm](https://anoma.ly/hex/download/linux-x64-rpm) | [.rpm](https://anoma.ly/hex/download/dev/linux-x64-rpm) |
-| Linux ARM64 | [Executable](https://anoma.ly/hex/download/linux-arm64) | [Executable](https://anoma.ly/hex/download/dev/linux-arm64) |
-| Linux ARM64 (Debian, Ubuntu) | [.deb](https://anoma.ly/hex/download/linux-arm64-deb) | [.deb](https://anoma.ly/hex/download/dev/linux-arm64-deb) |
-| Linux ARM64 (Fedora, openSUSE) | [.rpm](https://anoma.ly/hex/download/linux-arm64-rpm) | [.rpm](https://anoma.ly/hex/download/dev/linux-arm64-rpm) |
-
-Or install with:
-
-- Homebrew: `brew install --cask anomalyco/tap/hex`
-- AUR: `yay -S hex-bin`
-- install script (Linux): `curl -fsSL https://anoma.ly/hex/install-linux.sh | sh`
-- Nix (Linux): `nix profile add github:anomalyco/hex`
-
-## Command line
-
-`hex transcribe meeting.m4a` prints a recording's transcript, whether or not
-the app is running. It reads WAV, AIFF, CAF, FLAC, MP3, Ogg, WebM, and
-MP4/M4A/MOV, including a video's soundtrack. The same `hex` controls the
-running app (`hex status`, `hex dictation`, `hex settings`); see
-[`docs/cli.md`](docs/cli.md).
-
-On macOS the CLI is inside the app. Homebrew links it for you; otherwise link
-it somewhere on your `PATH` that you own:
+Windows, macOS or Linux with JDK 21 and the Android cmdline tools:
 
 ```sh
-ln -s /Applications/Hex.app/Contents/MacOS/hex ~/.local/bin/hex
+export JAVA_HOME=<jdk-21> ANDROID_HOME=~/Android/Sdk
+sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+cd android && ./gradlew assembleDebug test
+adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Linux and Windows installs put `hex` on your `PATH`.
+76 JVM unit tests; device-verified on a Redmi Note 9 Pro Max (dictation, insertion,
+cancel, password lock-down, airplane mode, memory footprint). Plan and results:
+[docs/plans/android-vtt-v1.md](docs/plans/android-vtt-v1.md).
 
-More docs are in [`docs/`](docs/README.md).
+## About
 
-## Contributing
+Built by **Shripad** — [www.shiphandari.in](https://www.shiphandari.in) — who wanted
+his own phone to take dictation without sending his voice to a server. Source:
+[github.com/Shripad735/hex](https://github.com/Shripad735/hex)
+(`android-vtt` branch). Suggestions live in
+[issues](https://github.com/Shripad735/hex/issues) for now; pull requests that
+create suggestions automatically are a later step.
 
-We don't take pull requests. [Open an issue](https://github.com/anomalyco/hex/issues)
-describing the bug or idea, and our agents usually turn it around fast.
+## Upstream
+
+This is a fork of [anomalyco/hex](https://github.com/anomalyco/hex), the local
+voice-dictation desktop app for Mac, Windows and Linux. Desktop docs, Labs,
+Meetings and the rest live upstream and are untouched here.
 
 MIT licensed.

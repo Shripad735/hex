@@ -89,11 +89,11 @@ internal class KeyPlane(context: Context, private val ime: HexKeyboard) : Linear
         orientation = VERTICAL
         layoutDirection = View.LAYOUT_DIRECTION_LTR
         // System IME affordances (hide handle, keyboard switcher) float over the
-        // window's bottom edge: keep Gboard-like clearance above the gesture bar.
-        setPadding(dp(3), 0, dp(3), dp(32))
+        // window's bottom edge: keep clearance above the gesture bar.
+        setPadding(dp(3), 0, dp(3), dp(28))
         setOnApplyWindowInsetsListener { _, insets ->
             val nav = insets.getInsets(WindowInsets.Type.navigationBars())
-            setPadding(dp(3) + nav.left, 0, dp(3) + nav.right, dp(32) + nav.bottom)
+            setPadding(dp(3) + nav.left, 0, dp(3) + nav.right, dp(28) + nav.bottom)
             insets
         }
         setBackgroundColor(color(R.color.keyboard))

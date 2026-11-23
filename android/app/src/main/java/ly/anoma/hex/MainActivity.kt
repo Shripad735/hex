@@ -56,6 +56,11 @@ class MainActivity : ComponentActivity() {
     private var phase by mutableStateOf(SpeechPhase.Idle)
     private var transcript by mutableStateOf("")
     private var notice by mutableStateOf<String?>(null)
+    private var updateState by mutableStateOf<UpdateState>(UpdateState.Idle)
+    private val updatePrefs by lazy { getSharedPreferences("update", MODE_PRIVATE) }
+    private val updateDot: Boolean
+        get() = updateState is UpdateState.Available ||
+            updatePrefs.getString("latest", null)?.let { it.isNotEmpty() && !it.startsWith(BuildConfig.GIT_SHA) } == true
     private lateinit var capture: MicCapture
     private val changed = object : ContentObserver(Handler(Looper.getMainLooper())) {
         override fun onChange(selfChange: Boolean) = refresh()
@@ -79,7 +84,8 @@ class MainActivity : ComponentActivity() {
                 val model = ModelStore.state.collectAsState().value
                 if (page == 3) HexSettings(setup, speech, typing, model, { ModelStore.download(this) },
                     phase, transcript, notice, ::dictate, capture::cancel, { go(it) },
-                    { startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)) })
+                    { startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)) },
+                    updateDot, updateState, ::checkForUpdates, ::openUrl)
                 else SetupScreen(page, setup, ::go, ::askForMic,
                     enable = { startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)) },
                     choose = { imm.showInputMethodPicker() }, model = model,
@@ -96,6 +102,28 @@ class MainActivity : ComponentActivity() {
             SpeechPhase.Opening, SpeechPhase.Listening -> capture.finish()
             SpeechPhase.Transcribing -> Unit
         }
+    }
+    private fun openUrl(url: String) {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    }
+    private fun checkForUpdates() {
+        if (updateState == UpdateState.Checking) return
+        updateState = UpdateState.Checking
+        Thread({
+            val latest = UpdateCheck.fetchLatestSha()
+            val next = when {
+                latest == null -> UpdateState.Failed
+                BuildConfig.GIT_SHA == "dev" || latest.startsWith(BuildConfig.GIT_SHA) -> {
+                    updatePrefs.edit().putString("latest", "").apply()
+                    UpdateState.Current(latest)
+                }
+                else -> {
+                    updatePrefs.edit().putString("latest", latest).apply()
+                    UpdateState.Available(latest)
+                }
+            }
+            runOnUiThread { updateState = next }
+        }, "Hex update check").start()
     }
     private fun go(next: Int) {
         if (page == 3 && next != 3) { capture.cancel(); transcript = "" }
