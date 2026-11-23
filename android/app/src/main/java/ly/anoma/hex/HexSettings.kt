@@ -251,7 +251,7 @@ internal fun HexSettings(setup: Setup, speech: SpeechPreferences, typing: Typing
                         }
                         Card {
                             Entry("Source code", "github.com/Shripad735/hex", "↗", { openUrl(UpdateCheck.SOURCE_PAGE) })
-                            Rule(); Entry("Developer", "Sripad SK · shripadkhandare.in", "↗", { openUrl(UpdateCheck.DEVELOPER_PAGE) })
+                            Rule(); Entry("Developer", "Shripad SK · shripadkhandare.in", "↗", { openUrl(UpdateCheck.DEVELOPER_PAGE) })
                         }
                         Card {
                             when (update) {

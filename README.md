@@ -44,7 +44,7 @@ cancel, password lock-down, airplane mode, memory footprint). Plan and results:
 
 ## About
 
-Built by **Sripad SK** — [shripadkhandare.in](https://shripadkhandare.in) — who wanted
+Built by **Shripad SK** — [shripadkhandare.in](https://shripadkhandare.in) — who wanted
 his own phone to take dictation without sending his voice to a server. Source:
 [github.com/Shripad735/hex](https://github.com/Shripad735/hex)
 (`android-vtt` branch). The About page in the app links the source, shows the
