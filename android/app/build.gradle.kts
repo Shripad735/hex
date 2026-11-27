@@ -12,17 +12,29 @@ plugins {
 }
 
 // Resolved at build time only. A clean install works with airplane mode on.
+// F-Droid note: this task downloads a binary at build time, which F-Droid's
+// offline build cannot do. Set HEX_SKIP_MODEL_DOWNLOAD=1 (or
+// -Phex.skipModelDownload) to skip it when the tiny model is provided another
+// way (srclib/extlib/pre-seeded file); the build then reuses an existing
+// whisper-tiny.bin or fails with a clear message instead of using network.
 val modelAssets = layout.buildDirectory.dir("generated/whisper/assets")
 val modelRevision = "5359861c739e955e79d9a303bcbc70fb988958b1"
 val modelSha256 = "818710568da3ca15689e31a743197b520007872ff9576237bda97bd1b469c3d7"
+val skipModelDownload = providers.environmentVariable("HEX_SKIP_MODEL_DOWNLOAD").orNull == "1" ||
+    (findProperty("hex.skipModelDownload") as String? == "true")
 val prepareSpeechModel by tasks.registering {
     val modelUrl = "https://huggingface.co/ggerganov/whisper.cpp/resolve/$modelRevision/ggml-tiny-q5_1.bin"
     inputs.property("url", modelUrl)
     inputs.property("sha256", modelSha256)
     val destination = modelAssets.map { it.file("whisper-tiny.bin") }
     outputs.file(destination)
+    onlyIf { !skipModelDownload || !destination.get().asFile.isFile }
     doLast {
         val file = destination.get().asFile
+        if (file.isFile) return@doLast
+        check(!skipModelDownload) {
+            "whisper-tiny.bin missing and HEX_SKIP_MODEL_DOWNLOAD=1; pre-seed it or unset the flag."
+        }
         file.parentFile.mkdirs()
         val part = Files.createTempFile(file.parentFile.toPath(), "whisper", ".part")
         try {
@@ -51,10 +63,14 @@ val uploadProperties = providers.environmentVariable("HEX_ANDROID_KEYSTORE_PROPE
 val upload = Properties().apply {
     if (uploadProperties.isFile) uploadProperties.inputStream().use(::load)
 }
+// F-Droid / contributors without an upload key must still be able to build
+// release APKs unsigned; F-Droid signs them itself.
+val hasUploadKey = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+    .all { !upload.getProperty(it).isNullOrBlank() } &&
+    uploadProperties.parentFile.resolve(upload.getProperty("storeFile") ?: "").isFile
 val requireUploadKey by tasks.registering {
     doLast {
-        check(listOf("storeFile", "storePassword", "keyAlias", "keyPassword").all { !upload.getProperty(it).isNullOrBlank() } &&
-            uploadProperties.parentFile.resolve(upload.getProperty("storeFile")).isFile) {
+        check(hasUploadKey) {
             "Release packaging requires a local upload keystore and keystore.properties."
         }
     }
@@ -66,7 +82,7 @@ android {
     ndkVersion = "27.2.12479018"
 
     defaultConfig {
-        applicationId = "ly.anoma.hex"
+        applicationId = "in.shripadkhandare.hex"
         minSdk = 31
         targetSdk = 36
         versionCode = 2
@@ -99,7 +115,9 @@ android {
             isJniDebuggable = false
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("upload")
+            // Unsigned when no upload key is present so F-Droid (which signs
+            // itself) and keyless contributors can still assembleRelease.
+            if (hasUploadKey) signingConfig = signingConfigs.getByName("upload")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -116,8 +134,10 @@ android {
 }
 
 kotlin.compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
-tasks.matching { it.name in setOf("packageRelease", "packageReleaseBundle", "signReleaseBundle", "bundleRelease", "assembleRelease") }
+tasks.matching { it.name in setOf("packageRelease", "packageReleaseBundle", "signReleaseBundle", "bundleRelease") }
     .configureEach { dependsOn(requireUploadKey) }
+// Note: assembleRelease is intentionally NOT gated on requireUploadKey so
+// F-Droid (which signs with its own key) can build an unsigned APK.
 // Unmodified InterVariable.ttf from rsms/inter v4.1, stored locally for offline builds.
 val verifyInter by tasks.registering {
     val font = file("src/main/res/font/inter_variable.ttf")

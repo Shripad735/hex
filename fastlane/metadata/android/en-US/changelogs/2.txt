@@ -1,0 +1,1 @@
+First F-Droid candidate: offline keyboard with on-device dictation (English, Spanish, German, Norwegian Bokmål), explicit one-tap 190 MB model download, no accounts or tracking.

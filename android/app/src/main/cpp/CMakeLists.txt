@@ -13,11 +13,18 @@ set(GGML_CPU_ARM_ARCH armv8-a CACHE STRING "")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Interactive decoding needs optimized kernels even in the debuggable APK.
 add_compile_options($<$<CONFIG:Debug>:-O2>)
-FetchContent_Declare(whisper_cpp
-    URL https://codeload.github.com/ggml-org/whisper.cpp/tar.gz/d1be6fde11ac6e0407606b4e42fe72d34add8037
-    URL_HASH SHA256=645445da884df6dbd52b30f82d7be7c01d1767c938714e477e786b88d529e9f4
-    TLS_VERIFY ON)
-FetchContent_MakeAvailable(whisper_cpp)
+# F-Droid/offline note: FetchContent downloads whisper.cpp at configure time.
+# When HEX_WHISPER_SRC points at a pre-fetched source tree (F-Droid srclib),
+# use it directly so no network is needed.
+if(DEFINED ENV{HEX_WHISPER_SRC} AND EXISTS "$ENV{HEX_WHISPER_SRC}/CMakeLists.txt")
+    add_subdirectory($ENV{HEX_WHISPER_SRC} whisper_cpp)
+else()
+    FetchContent_Declare(whisper_cpp
+        URL https://codeload.github.com/ggml-org/whisper.cpp/tar.gz/d1be6fde11ac6e0407606b4e42fe72d34add8037
+        URL_HASH SHA256=645445da884df6dbd52b30f82d7be7c01d1767c938714e477e786b88d529e9f4
+        TLS_VERIFY ON)
+    FetchContent_MakeAvailable(whisper_cpp)
+endif()
 
 add_library(hexspeech SHARED hexspeech.cpp)
 target_compile_features(hexspeech PRIVATE cxx_std_17)
