@@ -27,15 +27,12 @@ Builds:
     gradle:
       - yes
     output: app/build/outputs/apk/release/app-release-unsigned.apk
-    # prebuild runs in subdir (android/). HEX_SKIP_MODEL_DOWNLOAD=1 avoids the
-    # build-time HuggingFace fetch; the tiny model must then be pre-seeded.
-    # Option A (reproducible, preferred by reviewers): vendor whisper.cpp via
-    # srclib and export HEX_WHISPER_SRC=$$WhisperCpp$$, and pre-seed
-    # whisper-tiny.bin with SHA256 818710568da3ca15689e31a743197b520007872ff9576237bda97bd1b469c3d7.
-    # Option B (local test only): allow network and build normally.
-    prebuild:
-      - export HEX_SKIP_MODEL_DOWNLOAD=1
-      - export HEX_WHISPER_SRC=$$WhisperCpp$$
+    # No prebuild overrides: the build fetches whisper.cpp (pinned tarball +
+    # SHA-256 in CMakeLists) and the tiny model (pinned URL + SHA-256 in
+    # build.gradle) over the network like Gradle/Maven deps. If reviewers
+    # require vendored sources, the code supports HEX_WHISPER_SRC (pre-fetched
+    # whisper.cpp tree) and HEX_SKIP_MODEL_DOWNLOAD=1 (pre-seeded
+    # whisper-tiny.bin) without changes.
 
 MaintainerNotes: |-
   Fork of anomalyco/hex (desktop dictation). New applicationId in.shripadkhandare.hex.
