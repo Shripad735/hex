@@ -20,10 +20,9 @@ Repo: https://github.com/Shripad735/hex
 Builds:
   - versionName: 0.1.1
     versionCode: 2
-    # IMPORTANT: replace with the tagged commit you publish, e.g. android-v1.0.0.
-    # Never use a branch name. Full commit hash required.
-    # Current android-vtt head at time of drafting:
-    commit: 0d884e26ec0ebe5ac543e6d4d04eca59d62c5ead
+    # Release tag android-v0.1.1 (versionCode 2). Never use a branch name.
+    # Full commit hash required.
+    commit: ab8325f94db9fa3ab04b5fec0ab7ce44a7d8ffdf
     subdir: android
     gradle:
       - yes
