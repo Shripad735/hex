@@ -18,13 +18,11 @@ Repo: https://github.com/Shripad735/hex
 Builds:
   - versionName: 0.1.2
     versionCode: 3
-    commit: e9bab738c4e66e17af4f1c5551b2c786b6cf321b
+    commit: deac8df9413e95a8c88f3d0cbe88cff3b2a46d9a
     subdir: android
     gradle:
       - yes
     output: app/build/outputs/apk/release/app-release-unsigned.apk
-    scandelete:
-      - packaging/macos/dmg/DS_Store
 
 MaintainerNotes: |-
   Fork of anomalyco/hex (desktop dictation). New applicationId in.shripadkhandare.hex.
@@ -34,8 +32,8 @@ MaintainerNotes: |-
   AntiFeature needed. No GMS/Firebase. NDK 27.2.12479018, CMake 3.22.1, compileSdk 36.
 
 AutoUpdateMode: Version
-UpdateCheckMode: Tags
-UpdateCheckData:
+UpdateCheckMode: Tags ^android-v[0-9]+\.[0-9]+\.[0-9]+$
+UpdateCheckData: 
   android/app/build.gradle.kts|versionCode\s*=\s*(\d+)|.|versionName\s*=\s*"([^"]+)"
 CurrentVersion: 0.1.2
 CurrentVersionCode: 3
