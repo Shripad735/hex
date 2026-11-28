@@ -85,8 +85,8 @@ android {
         applicationId = "in.shripadkhandare.hex"
         minSdk = 31
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.1.2"
         // Short commit baked into About; compared against the rolling release.
         val gitSha = providers.exec { commandLine("git", "rev-parse", "--short=12", "HEAD") }
             .standardOutput.asText.get().trim().ifEmpty { "dev" }
@@ -134,10 +134,11 @@ android {
 }
 
 kotlin.compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
-tasks.matching { it.name in setOf("packageRelease", "packageReleaseBundle", "signReleaseBundle", "bundleRelease") }
+// Only the Play upload bundle needs the private upload key. packageRelease
+// and assembleRelease build fine unsigned (F-Droid signs with its own key,
+// and keyless contributors get an unsigned APK), so they are not gated.
+tasks.matching { it.name in setOf("packageReleaseBundle", "signReleaseBundle", "bundleRelease") }
     .configureEach { dependsOn(requireUploadKey) }
-// Note: assembleRelease is intentionally NOT gated on requireUploadKey so
-// F-Droid (which signs with its own key) can build an unsigned APK.
 // Unmodified InterVariable.ttf from rsms/inter v4.1, stored locally for offline builds.
 val verifyInter by tasks.registering {
     val font = file("src/main/res/font/inter_variable.ttf")

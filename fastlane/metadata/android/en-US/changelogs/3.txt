@@ -1,0 +1,1 @@
+Release builds (APK and upload bundle) no longer require the private Play upload key, so F-Droid and keyless contributors can build unsigned. No app-code change from 0.1.1.
