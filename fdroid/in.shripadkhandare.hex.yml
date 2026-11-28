@@ -18,7 +18,8 @@ Builds:
     versionCode: 2
     commit: ab8325f94db9fa3ab04b5fec0ab7ce44a7d8ffdf
     subdir: android
-    scandelete: packaging/macos/dmg/DS_Store
+    scandelete:
+      - packaging/macos/dmg/DS_Store
     gradle:
       - yes
     output: app/build/outputs/apk/release/app-release-unsigned.apk
